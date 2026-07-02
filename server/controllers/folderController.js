@@ -38,10 +38,21 @@ const createFolder = async (req, res) => {
 
 const getFolders = async (req, res) => {
     try {
-        const folders = await Folder.find({
+        const parent = req.query.parent || null;
+
+        const query = {
             owner: req.user.id,
-            parent: null,
-        }).sort({ createdAt: -1 });
+        };
+
+        if(parent === null) {
+            query.parent = null;
+        } else {
+            query.parent = parent;
+        }
+
+        const folders = await Folder.find(query).sort({
+            createdAt: -1,
+        });
 
         res.status(200).json({
             success: true,

@@ -1,0 +1,20 @@
+import api from "./api";
+
+export const getFolders = async (parent = null) => {
+    const response = await api.get("/folders", {
+        params: {
+            parent,
+        },
+    });
+
+    return response.data;
+};
+
+export const createFolder = async (name, parent = null) => {
+    const response = await api.post("/folders", {
+        name, 
+        parent,
+    });
+
+    return response.data;
+};
