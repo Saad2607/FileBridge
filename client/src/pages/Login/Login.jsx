@@ -10,6 +10,7 @@ function Login() {
     const [password, setPassword] = useState("");
 
     const { setToken, setUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
@@ -21,7 +22,6 @@ function Login() {
             setToken(data.token);
             setUser(data.user);
 
-            const navigate = useNavigate();
             navigate(ROUTES.DASHBOARD);
 
             console.log("Login Successful:", data);
