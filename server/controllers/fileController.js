@@ -1,4 +1,5 @@
 const File = require("../models/File");
+const path = require("path");
 
 const uploadFile = async (req, res) => {
     try {
@@ -63,4 +64,34 @@ const getFiles = async (req, res) => {
     }
 };
 
-module.exports = { uploadFile, getFiles };
+const downloadFile = async (req, res) => {
+    try {
+        const file = await File.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+        });
+
+        if(!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        const filePath = path.resolve(file.path);
+
+        res.download(
+            filePath,
+            file.originalName
+        );
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to download file.",
+        });
+    }
+};
+
+module.exports = { uploadFile, getFiles, downloadFile };

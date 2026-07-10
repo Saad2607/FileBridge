@@ -1,5 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import FolderIcon from "@mui/icons-material/Folder";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 import { FolderContext } from "../../context/FolderContext";
 
@@ -8,7 +10,11 @@ import CreateFolder from "../../components/folder/CreateFolder";
 import FileUpload from "../../components/file/FileUpload";
 
 import { getFolders, createFolder } from "../../services/folderService";
-import { getFiles, uploadFile } from "../../services/fileService";
+import { getFiles, uploadFile, downloadFile } from "../../services/fileService";
+
+import FolderToolbar from "../folder/FolderToolbar";
+import FolderGrid from "../folder/FolderGrid";
+import FileGrid from "../file/FileGrid";
 
 function MainContent() {
 
@@ -113,95 +119,82 @@ function MainContent() {
 
     };
 
+    const handleDownload = async (file) => {
+        try {
+            await downloadFile(
+                file._id,
+                file.originalName
+            );
+        } catch (error) {
+            console.error(error);
+            alert(
+                error.response?.data?.message || "Unable to download file."
+            );
+        }
+    };
+
     return (
-        <div
-            style={{
+        <Box
+            sx={{
                 flex: 1,
-                padding: "30px",
+                p: 4,
             }}
         >
 
             <Breadcrumb />
 
-            <CreateFolder
-                onCreate={handleCreateFolder}
-            />
+            <FolderToolbar>
+                <CreateFolder
+                    onCreate={handleCreateFolder}
+                />
 
-            <br />
+                <FileUpload
+                    onSelect={handleUpload}
+                />
+            </FolderToolbar>
 
-            <FileUpload
-                onSelect={handleUpload}
-            />
-
-            <br />
-            <br />
-
-            <h2>
+            <Typography
+                variant="h4"
+                fontWeight="bold"
+                gutterBottom
+            >
                 {currentFolder ? currentFolder.name : "Home"}
-            </h2>
+            </Typography>
 
-            <br />
+            <Typography
+                color="text.secondary"
+                sx={{ mb: 3 }}
+            >
+                Store your files securely and access them from anywhere.
+            </Typography>
 
-            <h3>Folders</h3>
+            <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{ mt: 3, mb: 2 }}
+            >
+                Folders
+            </Typography>
 
-            {folders.length === 0 ? (
+            <FolderGrid
+                folders={folders}
+                onOpen={handleOpenFolder}
+            />
 
-                <p>No folders found.</p>
+            <Typography
+                variant="h5"
+                fontWeight={600}
+                sx={{ mt: 4, mb: 2 }}
+            >
+                Files
+            </Typography>
 
-            ) : (
+            <FileGrid
+                files={files}
+                onDownload={handleDownload}
+            />
 
-                folders.map((folder) => (
-
-                    <div
-                        key={folder._id}
-                        onClick={() => handleOpenFolder(folder)}
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            marginBottom: "15px",
-                            cursor: "pointer",
-                        }}
-                    >
-
-                        <FolderIcon />
-
-                        <span>{folder.name}</span>
-
-                    </div>
-
-                ))
-
-            )}
-
-            <br />
-
-            <h3>Files</h3>
-
-            {files.length === 0 ? (
-
-                <p>No files found.</p>
-
-            ) : (
-
-                files.map((file) => (
-
-                    <div
-                        key={file._id}
-                        style={{
-                            marginBottom: "10px",
-                        }}
-                    >
-
-                        📄 {file.originalName}
-
-                    </div>
-
-                ))
-
-            )}
-
-        </div>
+        </Box>
     );
 }
 
