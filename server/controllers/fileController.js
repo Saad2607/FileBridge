@@ -71,7 +71,7 @@ const downloadFile = async (req, res) => {
             owner: req.user.id,
         });
 
-        if(!file) {
+        if (!file) {
             return res.status(404).json({
                 success: false,
                 message: "File not found.",
@@ -94,4 +94,49 @@ const downloadFile = async (req, res) => {
     }
 };
 
-module.exports = { uploadFile, getFiles, downloadFile };
+const deleteFile = async (req, res) => {
+
+    try {
+
+        const file = await File.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+        });
+
+        if (!file) {
+
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+
+        }
+
+        const fs = require("fs");
+        
+
+        if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+        }
+
+        await file.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            message: "File deleted successfully.",
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to delete file.",
+        });
+
+    }
+
+};
+
+module.exports = { uploadFile, getFiles, downloadFile, deleteFile };

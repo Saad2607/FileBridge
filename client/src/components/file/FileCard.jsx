@@ -6,10 +6,12 @@ import {
     Box,
 } from "@mui/material";
 
+import ActionMenu from "../common/ActionMenu";
+
 import DownloadIcon from "@mui/icons-material/Download";
 import DescriptionIcon from "@mui/icons-material/Description";
 
-function FileCard({ file, onDownload }) {
+function FileCard({ file, onDownload, onDelete }) {
     return (
         <Card
             elevation={2}
@@ -40,13 +42,18 @@ function FileCard({ file, onDownload }) {
                         </Typography>
                     </Box>
 
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                    >
-                        Download
-                    </Button>
+                    <ActionMenu
+                        items={[
+                            {
+                                label: "Download",
+                                onClick: () => onDownload(file),
+                            },
+                            {
+                                label: "Delete",
+                                onClick: () => onDelete(file),
+                            },
+                        ]}
+                    />
 
                 </Box>
 

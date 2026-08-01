@@ -60,3 +60,13 @@ export const downloadFile = async (fileId, fileName) => {
 
     window.URL.revokeObjectURL(url);
 };
+
+export const deleteFile = async (id) => {
+
+    const response = await api.delete(
+        `/files/${id}`
+    );
+
+    return response.data;
+
+};

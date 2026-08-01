@@ -9,12 +9,15 @@ import Breadcrumb from "../folder/Breadcrumb";
 import CreateFolder from "../../components/folder/CreateFolder";
 import FileUpload from "../../components/file/FileUpload";
 
-import { getFolders, createFolder } from "../../services/folderService";
-import { getFiles, uploadFile, downloadFile } from "../../services/fileService";
+import { getFolders, createFolder, deleteFolder, renameFolder } from "../../services/folderService";
+import { getFiles, uploadFile, downloadFile, deleteFile } from "../../services/fileService";
 
 import FolderToolbar from "../folder/FolderToolbar";
 import FolderGrid from "../folder/FolderGrid";
 import FileGrid from "../file/FileGrid";
+
+import ConfirmDialog from "../common/ConfirmDialog";
+import RenameDialog from "../../components/common/RenameDialog";
 
 function MainContent() {
 
@@ -28,6 +31,16 @@ function MainContent() {
     } = useContext(FolderContext);
 
     const [files, setFiles] = useState([]);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedFolder, setSelectedFolder] = useState(null);
+
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const [deleteFileDialogOpen, setDeleteFileDialogOpen] = useState(false);
+
+    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+
+    const [selectedRenameFolder, setSelectedRenameFolder] = useState(null);
 
     useEffect(() => {
         loadContent();
@@ -89,6 +102,102 @@ function MainContent() {
             alert(
                 error.response?.data?.message ||
                 "Unable to create folder."
+            );
+
+        }
+
+    };
+
+    const handleDeleteFolder = (folder) => {
+
+        setSelectedFolder(folder);
+
+        setDeleteDialogOpen(true);
+
+    };
+
+    const confirmDeleteFolder = async () => {
+
+        try {
+
+            await deleteFolder(selectedFolder._id);
+
+            setDeleteDialogOpen(false);
+
+            setSelectedFolder(null);
+
+            loadContent();
+
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message ||
+                "Unable to delete folder."
+            );
+
+        }
+
+    };
+
+    const handleDeleteFile = (file) => {
+
+        setSelectedFile(file);
+
+        setDeleteFileDialogOpen(true);
+
+    };
+
+    const confirmDeleteFile = async () => {
+
+        try {
+
+            await deleteFile(selectedFile._id);
+
+            setDeleteFileDialogOpen(false);
+
+            setSelectedFile(null);
+
+            loadContent();
+
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message ||
+                "Unable to delete file."
+            );
+
+        }
+
+    };
+
+    const handleRenameFolder = (folder) => {
+
+        setSelectedRenameFolder(folder);
+
+        setRenameDialogOpen(true);
+
+    };
+
+    const confirmRenameFolder = async (newName) => {
+
+        try {
+
+            await renameFolder(
+                selectedRenameFolder._id,
+                newName
+            );
+
+            setRenameDialogOpen(false);
+
+            setSelectedRenameFolder(null);
+
+            loadContent();
+
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message ||
+                "Unable to rename folder."
             );
 
         }
@@ -179,6 +288,8 @@ function MainContent() {
             <FolderGrid
                 folders={folders}
                 onOpen={handleOpenFolder}
+                onDelete={handleDeleteFolder}
+                onRename={handleRenameFolder}
             />
 
             <Typography
@@ -192,8 +303,60 @@ function MainContent() {
             <FileGrid
                 files={files}
                 onDownload={handleDownload}
+                onDelete={handleDeleteFile}
             />
 
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                title="Delete Folder"
+                message={
+                    selectedFolder
+                        ? `Are you sure you want to delete "${selectedFolder.name}"?`
+                        : ""
+                }
+                onCancel={() => {
+
+                    setDeleteDialogOpen(false);
+
+                    setSelectedFolder(null);
+
+                }}
+                onConfirm={confirmDeleteFolder}
+            />
+
+            <ConfirmDialog
+                open={deleteFileDialogOpen}
+                title="Delete File"
+                message={
+                    selectedFile
+                        ? `Are you sure you want to delete "${selectedFile.originalName}"?`
+                        : ""
+                }
+                onCancel={() => {
+
+                    setDeleteFileDialogOpen(false);
+
+                    setSelectedFile(null);
+
+                }}
+                onConfirm={confirmDeleteFile}
+            />
+
+            <RenameDialog
+                open={renameDialogOpen}
+                title="Rename Folder"
+                initialValue={
+                    selectedRenameFolder?.name || ""
+                }
+                onCancel={() => {
+
+                    setRenameDialogOpen(false);
+
+                    setSelectedRenameFolder(null);
+
+                }}
+                onConfirm={confirmRenameFolder}
+            />
         </Box>
     );
 }

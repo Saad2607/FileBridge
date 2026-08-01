@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import FolderCard from "./FolderCard";
 
-function FolderGrid({ folders, onOpen }) {
+function FolderGrid({ folders, onOpen, onDelete, onRename }) {
 
     if (folders.length === 0) {
         return <p>No folders found.</p>;
@@ -20,6 +20,8 @@ function FolderGrid({ folders, onOpen }) {
                     <FolderCard
                         folder={folder}
                         onOpen={onOpen}
+                        onDelete={onDelete}
+                        onRename={onRename}
                     />
                 </Grid>
             ))}
