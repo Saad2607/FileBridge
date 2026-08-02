@@ -20,7 +20,6 @@ function Dashboard() {
                     flex: 1,
                 }}
             >
-                <Sidebar />
 
                 <MainContent />
             </div>

@@ -9,6 +9,7 @@ const createFolder = async (req, res) => {
             name: name.trim(),
             owner: req.user.id,
             parent: parent || null,
+            isDeleted: false,
         });
 
         if (existingFolder) {
@@ -44,6 +45,7 @@ const deleteFolder = async (req, res) => {
         const folder = await Folder.findOne({
             _id: req.params.id,
             owner: req.user.id,
+            isDeleted: false,
         });
 
         if (!folder) {
@@ -56,7 +58,8 @@ const deleteFolder = async (req, res) => {
         }
 
         const childFolders = await Folder.countDocuments({
-            parentFolder: folder._id,
+            parent: folder._id,
+            isDeleted: false,
         });
 
         if (childFolders > 0) {
@@ -70,6 +73,7 @@ const deleteFolder = async (req, res) => {
 
         const files = await File.countDocuments({
             folder: folder._id,
+            isDeleted: false,
         });
 
         if (files > 0) {
@@ -81,11 +85,15 @@ const deleteFolder = async (req, res) => {
 
         }
 
-        await folder.deleteOne();
+        folder.isDeleted = true;
+
+        folder.deletedAt = new Date();
+
+        await folder.save();
 
         res.status(200).json({
             success: true,
-            message: "Folder deleted successfully.",
+            message: "Folder moved to Recycle Bin.",
         });
 
     } catch (error) {
@@ -115,7 +123,7 @@ const getFolders = async (req, res) => {
             query.parent = parent;
         }
 
-        const folders = await Folder.find(query).sort({
+        const folders = await Folder.find({ ...query, isDeleted: false }).sort({
             createdAt: -1,
         });
 
@@ -149,6 +157,7 @@ const renameFolder = async (req, res) => {
         const folder = await Folder.findOne({
             _id: req.params.id,
             owner: req.user.id,
+            isDeleted: false,
         });
 
         if (!folder) {
@@ -181,4 +190,38 @@ const renameFolder = async (req, res) => {
 
 };
 
-module.exports = { createFolder, getFolders, deleteFolder, renameFolder };
+const toggleFavoriteFolder = async (req, res) => {
+    try {
+
+        const folder = await Folder.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+            isDeleted: false,
+        });
+
+        if (!folder) {
+            return res.status(404).json({
+                success: false,
+                message: "Folder not found.",
+            });
+        }
+
+        folder.favorite = !folder.favorite;
+
+        await folder.save();
+
+        res.status(200).json({
+            success: true,
+            favorite: folder.favorite,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to update favorite.",
+        });
+    }
+};
+
+module.exports = { createFolder, getFolders, deleteFolder, renameFolder, toggleFavoriteFolder };

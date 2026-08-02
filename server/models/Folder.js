@@ -19,6 +19,21 @@ const folderSchema = new mongoose.Schema(
             ref: "Folder",
             default: null,
         },
+
+        favorite: {
+            type: Boolean,
+            default: false,
+        },
+
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps: true,

@@ -49,7 +49,10 @@ const getFiles = async (req, res) => {
             query.folder = folder;
         }
 
-        const files = await File.find(query).sort({
+        const files = await File.find({
+            ...query,
+            isDeleted: false,
+        }).sort({
             createdAt: -1,
         });
 
@@ -69,6 +72,7 @@ const downloadFile = async (req, res) => {
         const file = await File.findOne({
             _id: req.params.id,
             owner: req.user.id,
+            isDeleted: false,
         });
 
         if (!file) {
@@ -101,6 +105,7 @@ const deleteFile = async (req, res) => {
         const file = await File.findOne({
             _id: req.params.id,
             owner: req.user.id,
+            isDeleted: false,
         });
 
         if (!file) {
@@ -112,18 +117,15 @@ const deleteFile = async (req, res) => {
 
         }
 
-        const fs = require("fs");
-        
+        file.isDeleted = true;
 
-        if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path);
-        }
+        file.deletedAt = new Date();
 
-        await file.deleteOne();
+        await file.save();
 
         res.status(200).json({
             success: true,
-            message: "File deleted successfully.",
+            message: "File moved to Recycle Bin.",
         });
 
     } catch (error) {
@@ -139,4 +141,83 @@ const deleteFile = async (req, res) => {
 
 };
 
-module.exports = { uploadFile, getFiles, downloadFile, deleteFile };
+const renameFile = async (req, res) => {
+    try {
+        const { originalName } = req.body;
+
+        if (!originalName || !originalName.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "File name is required.",
+            });
+        }
+
+        const file = await File.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+            isDeleted: false,
+        });
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        file.originalName = originalName.trim();
+
+        await file.save();
+
+        res.status(200).json({
+            success: true,
+            message: "File renamed successfully.",
+            file,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to rename file.",
+        });
+    }
+};
+
+const toggleFavoriteFile = async (req, res) => {
+
+    try {
+
+        const file = await File.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+            isDeleted: false,
+        });
+
+        if (!file) {
+
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        file.favorite = !file.favorite;
+
+        await file.save();
+
+        res.status(200).json({
+            success: true,
+            favorite: file.favorite,
+        });
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to update favorite.",
+        });
+    }
+};
+
+module.exports = { uploadFile, getFiles, downloadFile, deleteFile, renameFile, toggleFavoriteFile };

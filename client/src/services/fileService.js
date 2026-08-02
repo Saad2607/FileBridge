@@ -34,7 +34,7 @@ export const getFiles = async (folder = null) => {
 };
 
 export const downloadFile = async (fileId, fileName) => {
-    const response = await api.get( 
+    const response = await api.get(
         `/files/download/${fileId}`,
 
         {
@@ -68,5 +68,38 @@ export const deleteFile = async (id) => {
     );
 
     return response.data;
+
+};
+
+export const renameFile = async (id, originalName) => {
+    const response = await api.put(
+        `/files/${id}`,
+        { originalName }
+    );
+
+    return response.data;
+};
+
+export const toggleFavoriteFile = async (id) => {
+    const response = await api.patch(
+        `/files/favorite/${id}`
+    );
+
+    return response.data;
+};
+
+export const createShareLink = async (
+    id,
+    expiry = "never"
+) => {
+
+    const { data } = await api.post(
+        `/share/${id}`,
+        {
+            expiry,
+        }
+    );
+
+    return data;
 
 };

@@ -24,3 +24,11 @@ export const clearSession = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 }
+
+export const clearToken = () => {
+    localStorage.removeItem("token");
+};
+
+export const clearUser = () => {
+    localStorage.removeItem("user");
+}; 

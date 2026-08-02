@@ -38,6 +38,36 @@ const fileSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+
+        favorite: {
+            type: Boolean,
+            default: false,
+        },
+
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
+
+        shareToken: {
+            type: String,
+            default: null,
+        },
+
+        isPublic: {
+            type: Boolean,
+            default: false,
+        },
+
+        shareExpiry: {
+            type: Date,
+            default: null,
+        }
     },
     {
         timestamps: true,

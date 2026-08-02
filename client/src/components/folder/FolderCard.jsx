@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import FolderIcon from "@mui/icons-material/Folder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import ActionMenu from "../common/ActionMenu";
 
 import {
@@ -13,7 +15,7 @@ import {
     MenuItem,
 } from "@mui/material";
 
-function FolderCard({ folder, onOpen, onDelete, onRename }) {
+function FolderCard({ folder, onOpen, onDelete, onRename, onProperties, onFavorite }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -67,7 +69,15 @@ function FolderCard({ folder, onOpen, onDelete, onRename }) {
                         <Typography variant="h6">
                             {folder.name}
                         </Typography>
+
+                        {folder.favorite && (
+                            <FavoriteIcon
+                                color="warning"
+                                fontSize="small"
+                            />
+                        )}
                     </Box>
+
 
                     <ActionMenu
                         items={[
@@ -79,6 +89,14 @@ function FolderCard({ folder, onOpen, onDelete, onRename }) {
                                 label: "Delete",
                                 onClick: () => onDelete(folder),
                             },
+                            {
+                                label: "Properties",
+                                onClick: () => onProperties(folder),
+                            },
+                            {
+                                label: folder.favorite ? "Remove Favorite" : "Add to Favorites",
+                                onClick: () => onFavorite(folder),
+                            }
                         ]}
                     />
 

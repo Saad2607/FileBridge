@@ -36,3 +36,11 @@ export const renameFolder = async (id, name) => {
     return response.data;
 
 };
+
+export const toggleFavoriteFolder = async (id) => {
+    const response = await api.patch(
+        `/folders/favorite/${id}`
+    );
+
+    return response.data;
+};

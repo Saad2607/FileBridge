@@ -9,8 +9,8 @@ import Breadcrumb from "../folder/Breadcrumb";
 import CreateFolder from "../../components/folder/CreateFolder";
 import FileUpload from "../../components/file/FileUpload";
 
-import { getFolders, createFolder, deleteFolder, renameFolder } from "../../services/folderService";
-import { getFiles, uploadFile, downloadFile, deleteFile } from "../../services/fileService";
+import { getFolders, createFolder, deleteFolder, renameFolder, toggleFavoriteFolder } from "../../services/folderService";
+import { getFiles, uploadFile, downloadFile, deleteFile, renameFile, toggleFavoriteFile, createShareLink } from "../../services/fileService";
 
 import FolderToolbar from "../folder/FolderToolbar";
 import FolderGrid from "../folder/FolderGrid";
@@ -18,6 +18,16 @@ import FileGrid from "../file/FileGrid";
 
 import ConfirmDialog from "../common/ConfirmDialog";
 import RenameDialog from "../../components/common/RenameDialog";
+
+import SearchBar from "../common/SearchBar";
+import { search } from "../../services/searchService";
+
+import PropertiesDialog from "../common/PropertiesDialog";
+
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
+import ShareDialog from "../common/ShareDialog";
 
 function MainContent() {
 
@@ -42,9 +52,46 @@ function MainContent() {
 
     const [selectedRenameFolder, setSelectedRenameFolder] = useState(null);
 
+    const [renameFileDialogOpen, setRenameFileDialogOpen] = useState(false);
+    const [selectedRenameFile, setSelectedRenameFile] = useState(null);
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchFolders, setSearchFolders] = useState([]);
+    const [searchFiles, setSearchFiles] = useState([]);
+
+    const [propertiesOpen, setPropertiesOpen] = useState(false);
+    const [propertiesTitle, setPropertiesTitle] = useState("");
+    const [properties, setProperties] = useState([]);
+
+    const [shareDialogOpen, setShareDialogOpen] = useState(false);
+    const [shareLink, setShareLink] = useState("");
+
     useEffect(() => {
         loadContent();
     }, [currentFolder]);
+
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+
+            if (!searchQuery.trim()) {
+                setSearchFolders([]);
+                setSearchFiles([]);
+
+                return;
+            }
+
+            try {
+                const data = await search(searchQuery);
+
+                setSearchFolders(data.folders);
+                setSearchFiles(data.files);
+            } catch (error) {
+                console.error(error);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     const loadContent = async () => {
 
@@ -204,6 +251,139 @@ function MainContent() {
 
     };
 
+    const handleRenameFile = (file) => {
+        setSelectedRenameFile(file);
+
+        setRenameFileDialogOpen(true);
+    };
+
+    const confirmRenameFile = async (newName) => {
+        try {
+            await renameFile(
+                selectedRenameFile._id,
+                newName,
+            );
+
+            setRenameFileDialogOpen(false);
+            setSelectedRenameFile(null);
+
+            loadContent();
+        } catch (error) {
+            alert(
+                error.response?.data?.message || "Unable to rename file."
+            );
+        }
+    };
+
+    const handleFolderProperties = (folder) => {
+        setPropertiesTitle("Folder Properties");
+
+        setProperties([
+            {
+                label: "Name",
+                value: folder.name
+            },
+            {
+                label: "Created",
+                value: new Date(folder.createdAt).toLocaleString(),
+            },
+            {
+                label: "Last Updated",
+                value: new Date(folder.updatedAt).toLocaleString()
+            },
+        ]);
+
+        setPropertiesOpen(true);
+    };
+
+    const handleFileProperties = (file) => {
+        const sizeKB = (file.size / 1024).toFixed(2);
+
+        setPropertiesTitle("File Properties");
+
+        setProperties([
+            {
+                label: "Name",
+                value: file.originalName
+            },
+            {
+                label: "Type",
+                value: file.mimeType,
+            },
+            {
+                label: "Size",
+                value: `${sizeKB} KB`,
+            },
+            {
+                label: "Created",
+                value: new Date(file.createdAt).toLocaleString(),
+            },
+            {
+                label: "Last Updated",
+                value: new Date(file.updatedAt).toLocaleString()
+            }
+        ]);
+
+        setPropertiesOpen(true);
+    };
+
+    const handleFavoriteFolder = async (folder) => {
+
+        try {
+            await toggleFavoriteFolder(folder._id);
+
+            loadContent();
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message || "Unable to update favorite."
+            );
+        }
+    };
+
+    const handleFavoriteFile = async (file) => {
+
+        try {
+            await toggleFavoriteFile(file._id);
+
+            loadContent();
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message || "Unable to update favorite."
+            );
+        }
+    };
+
+    const handleShare = async (
+        file,
+        expiry = "never"
+    ) => {
+
+        try {
+
+            const data = await createShareLink(
+                file._id,
+                expiry
+            );
+
+            setShareLink(data.shareUrl);
+
+            setShareDialogOpen(true);
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.response?.data?.message ||
+                "Unable to generate share link."
+            );
+
+        }
+
+    };
+
     const handleUpload = async (file) => {
 
         try {
@@ -242,6 +422,11 @@ function MainContent() {
         }
     };
 
+    const displayedFolders = searchQuery.trim() ? searchFolders : folders;
+
+    const displayedFiles = searchQuery.trim() ? searchFiles : files;
+
+
     return (
         <Box
             sx={{
@@ -251,6 +436,11 @@ function MainContent() {
         >
 
             <Breadcrumb />
+
+            <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+            />
 
             <FolderToolbar>
                 <CreateFolder
@@ -286,10 +476,12 @@ function MainContent() {
             </Typography>
 
             <FolderGrid
-                folders={folders}
+                folders={displayedFolders}
                 onOpen={handleOpenFolder}
                 onDelete={handleDeleteFolder}
                 onRename={handleRenameFolder}
+                onProperties={handleFolderProperties}
+                onFavorite={handleFavoriteFolder}
             />
 
             <Typography
@@ -301,9 +493,13 @@ function MainContent() {
             </Typography>
 
             <FileGrid
-                files={files}
+                files={displayedFiles}
                 onDownload={handleDownload}
                 onDelete={handleDeleteFile}
+                onRename={handleRenameFile}
+                onProperties={handleFileProperties}
+                onFavorite={handleFavoriteFile}
+                onShare={handleShare}
             />
 
             <ConfirmDialog
@@ -356,6 +552,38 @@ function MainContent() {
 
                 }}
                 onConfirm={confirmRenameFolder}
+            />
+
+            <RenameDialog
+                open={renameFileDialogOpen}
+                title="Rename File"
+                initialValue={
+                    selectedRenameFile?.originalName || ""
+                }
+                onCancel={() => {
+                    setRenameFileDialogOpen(false);
+
+                    setSelectedRenameFile(null);
+                }}
+
+                onConfirm={confirmRenameFile}
+            />
+
+            <PropertiesDialog
+                open={propertiesOpen}
+                title={propertiesTitle}
+                properties={properties}
+                onClose={() => setPropertiesOpen(false)}
+            />
+
+            <ShareDialog
+                open={shareDialogOpen}
+                link={shareLink}
+                onClose={() => {
+                    setShareDialogOpen(false);
+
+                    setShareLink("");
+                }}
             />
         </Box>
     );
