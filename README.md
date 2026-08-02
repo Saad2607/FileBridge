@@ -2,213 +2,339 @@
 
 > A modern cloud file management and synchronization platform built with the MERN stack and Electron.
 
-FileBridge allows users to securely upload, organize, download, and manage files through a web application, with future support for desktop synchronization across multiple devices.
+FileBridge is a cloud-inspired file management application that allows users to securely upload, organize, search, share, and manage files through a modern web interface. The long-term vision is to provide seamless synchronization across devices using an Electron desktop application.
 
 ---
 
-## 📖 Overview
+# 📖 Overview
 
-FileBridge is a full-stack personal project inspired by cloud storage platforms such as Google Drive, OneDrive, and Dropbox. The goal is to build a secure and scalable file management system where users can access their files from anywhere through a web interface and, in future releases, automatically synchronize files using a desktop application.
+FileBridge is a full-stack portfolio project inspired by platforms like **Google Drive**, **Dropbox**, and **Microsoft OneDrive**.
 
-This project is being developed incrementally with a focus on clean architecture, reusable components, and production-ready coding practices.
+The application focuses on providing a clean architecture, scalable backend, reusable React components, and production-ready development practices while implementing real-world cloud storage features.
 
 ---
 
-## ✨ Current Features
+# ✨ Current Features
 
-### Authentication
-- Secure JWT authentication
-- Protected API routes
-- Persistent user sessions
-- Login system
+## 🔐 Authentication
 
-### Folder Management
-- Create folders
-- Navigate nested folders
-- Breadcrumb navigation
-- Delete folders
-- Rename folders (in progress)
+- User Registration
+- User Login
+- JWT Authentication
+- Protected Routes
+- Persistent Sessions
+- Logout
 
-### File Management
-- Upload files
-- Download files
-- Delete files
+---
 
-### User Interface
-- Material UI based interface
-- Responsive dashboard
-- Sidebar navigation
-- Reusable dialogs
-- Reusable action menus
+## 📁 Folder Management
 
-### Architecture
+- Create Folders
+- Nested Folder Navigation
+- Breadcrumb Navigation
+- Rename Folders
+- Soft Delete
+- Restore Deleted Folders
+- Permanent Delete
+- Favorite Folders
+
+---
+
+## 📄 File Management
+
+- Upload Files
+- Download Files
+- Rename Files
+- Soft Delete
+- Restore Deleted Files
+- Permanent Delete
+- Favorite Files
+
+---
+
+## 🔍 Search
+
+- Search Files
+- Search Folders
+- Instant Search Results
+
+---
+
+## ⭐ Favorites
+
+- Mark Files as Favorite
+- Mark Folders as Favorite
+- Dedicated Favorites Page
+
+---
+
+## ♻️ Recycle Bin
+
+- Soft Delete
+- Restore Items
+- Delete Forever
+- Dedicated Recycle Bin
+
+---
+
+## 🔗 File Sharing
+
+- Generate Public Share Links
+- UUID-Based Secure Links
+- Copy Link to Clipboard
+- Public File Download
+- Share Dialog UI
+
+---
+
+## 🎨 User Interface
+
+- Material UI
+- Responsive Layout
+- Sidebar Navigation
+- Reusable Components
+- Dialog System
+- Action Menus
+- Modern Dashboard
+
+---
+
+## 🏗 Architecture
+
 - RESTful API
-- Context API for state management
-- Component-based frontend
-- Modular backend structure
+- Context API
+- Component-Based React
+- Modular Backend
+- JWT Authentication
+- MongoDB Data Modeling
 
 ---
 
-## 🚀 Planned Features
+# 🚀 Upcoming Features
 
-- Desktop synchronization using Electron
-- Drag & Drop uploads
-- File previews
-- Search functionality
-- Favorites
-- Rename files
-- File sharing
-- User registration
-- Role-based access
-- Storage usage statistics
-- Dark mode
-- Recycle Bin
-- Version history
+## Sharing
+
+- Password Protected Links
+- Link Expiry
+- Disable Sharing
+- Share Permissions
+
+## File Management
+
+- Drag & Drop Upload
+- File Preview
+- Multiple File Upload
+- Folder Color Tags
+
+## Dashboard
+
+- Storage Analytics
+- Recent Files
+- Activity Feed
+
+## User Settings
+
+- Profile Management
+- Change Password
+- Avatar Upload
+- Dark Mode
+
+## Desktop
+
+- Electron Desktop Client
+- Automatic File Sync
+- Offline Support
 
 ---
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 
-### Frontend
+## Frontend
 
 - React
 - React Router
-- Material UI
-- Axios
 - Context API
+- Axios
+- Material UI
 
-### Backend
+## Backend
 
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
-- JWT Authentication
+- JWT
 - Multer
+- UUID
 
-### Desktop (Planned)
+## Desktop (Planned)
 
 - Electron
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
 FileBridge/
 │
-├── client/          # React Frontend
-├── server/          # Express Backend
-├── docs/            # Documentation
-├── desktop/         # Electron App (Planned)
+├── client/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── server/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── uploads/
+│   └── package.json
+│
+├── docs/
+│
+├── desktop/          # Planned
+│
 └── README.md
 ```
 
 ---
 
-## ⚙️ Getting Started
+# ⚙️ Installation
 
-### Clone the repository
+## Clone Repository
 
 ```bash
 git clone <repository-url>
+```
+
+```bash
 cd FileBridge
 ```
 
-### Install dependencies
+---
 
-Frontend
+## Install Backend
 
 ```bash
-cd client
+cd server
 npm install
 ```
 
-Backend
+---
+
+## Install Frontend
 
 ```bash
-cd ../server
+cd ../client
 npm install
 ```
 
-### Environment Variables
+---
 
-Create a `.env` file inside the `server` directory.
+# Environment Variables
+
+Create `.env` inside the **server** folder.
 
 ```env
 PORT=5000
+
 MONGO_URI=your_mongodb_connection_string
+
 JWT_SECRET=your_secret_key
 ```
 
-### Run Backend
+---
+
+# Run Backend
 
 ```bash
-npm run dev
-```
-
-### Run Frontend
-
-```bash
+cd server
 npm run dev
 ```
 
 ---
 
-## 📸 Screenshots
+# Run Frontend
+
+```bash
+cd client
+npm run dev
+```
+
+---
+
+# 📸 Screenshots
 
 Screenshots will be added as development progresses.
 
 ---
 
-## 📌 Development Status
+# 📌 Current Progress
 
-This project is currently under active development.
-
-Completed modules include:
+## Completed
 
 - Authentication
+- Dashboard
 - Folder Management
 - File Upload
 - File Download
-- File Deletion
-- Dashboard UI
-
-Upcoming modules include:
-
-- Rename functionality
+- Rename
 - Search
 - Favorites
-- Electron synchronization
-- Advanced file management
+- Recycle Bin
+- File Sharing (v1)
+- Responsive UI
+- Logout
 
 ---
 
-## 🎯 Project Goals
+## In Progress
 
-- Learn full-stack application architecture
+- Advanced File Sharing
+- User Settings
+- Storage Dashboard
+
+---
+
+## Planned
+
+- Electron Desktop Sync
+- File Versioning
+- Notifications
+- Real-time Updates
+- Multi-device Synchronization
+
+---
+
+# 🎯 Learning Goals
+
 - Build a production-ready MERN application
+- Learn scalable backend architecture
+- Design reusable React components
 - Implement secure authentication
-- Practice scalable React component design
-- Develop an Electron desktop companion
-- Explore cloud file synchronization concepts
+- Develop RESTful APIs
+- Build a cloud storage platform from scratch
+- Explore desktop synchronization using Electron
 
 ---
 
-## 🤝 Contributing
+# 🤝 Contributing
 
-This is currently a personal learning and portfolio project. Contributions, suggestions, and feedback are welcome.
+This project is currently developed as a personal portfolio and learning project.
 
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
+Suggestions, issues, and discussions are always welcome.
 
 ---
 
-## 👨‍💻 Author
+# 📄 License
+
+Licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
 
 **Mohammed Saad Shaikh**
 
-Built as a full-stack portfolio project using the MERN stack and Electron.
+Built with ❤️ using the MERN Stack and Electron.
