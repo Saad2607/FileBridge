@@ -4,13 +4,14 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 import { FolderContext } from "../../context/FolderContext";
+import { UploadContext } from "../../context/UploadContext";
 
 import Breadcrumb from "../folder/Breadcrumb";
 import CreateFolder from "../../components/folder/CreateFolder";
 import FileUpload from "../../components/file/FileUpload";
 
 import { getFolders, createFolder, deleteFolder, renameFolder, toggleFavoriteFolder } from "../../services/folderService";
-import { getFiles, uploadFile, downloadFile, deleteFile, renameFile, toggleFavoriteFile, createShareLink } from "../../services/fileService";
+import { getFiles, uploadFile, downloadFile, deleteFile, renameFile, toggleFavoriteFile, createShareLink, disableShare } from "../../services/fileService";
 
 import FolderToolbar from "../folder/FolderToolbar";
 import FolderGrid from "../folder/FolderGrid";
@@ -27,7 +28,15 @@ import PropertiesDialog from "../common/PropertiesDialog";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-import ShareDialog from "../common/ShareDialog";
+import ShareDialog from "../share/ShareDialog";
+
+import DragDropZone from "../upload/DragDropZone";
+
+import EmptyState from "../../components/common/EmptyState";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+
+import FolderSkeleton from "../skeleton/FolderSkeleton";
+import FileSkeleton from "../skeleton/FileSkeleton";
 
 function MainContent() {
 
@@ -40,9 +49,24 @@ function MainContent() {
         setBreadcrumbs,
     } = useContext(FolderContext);
 
+    const {
+
+        uploading,
+        setUploading,
+
+        progress,
+        setProgress,
+
+        currentFile,
+        setCurrentFile,
+
+    } = useContext(UploadContext);
+
     const [files, setFiles] = useState([]);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedFolder, setSelectedFolder] = useState(null);
+
+    const [loading, setLoading] = useState(true);
 
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -65,6 +89,8 @@ function MainContent() {
 
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareLink, setShareLink] = useState("");
+
+    const [selectedShareFile, setSelectedShareFile] = useState(null);
 
     useEffect(() => {
         loadContent();
@@ -97,14 +123,14 @@ function MainContent() {
 
         try {
 
-            // Load folders
+            setLoading(true);
+
             const folderData = await getFolders(
                 currentFolder?._id || null
             );
 
             setFolders(folderData.folders);
 
-            // Load files
             const fileData = await getFiles(
                 currentFolder?._id || null
             );
@@ -113,7 +139,11 @@ function MainContent() {
 
         } catch (error) {
 
-            console.log(error);
+            console.error(error);
+
+        } finally {
+
+            setLoading(false);
 
         }
 
@@ -355,30 +385,93 @@ function MainContent() {
         }
     };
 
-    const handleShare = async (
-        file,
-        expiry = "never"
-    ) => {
+    const handleShare = (file) => {
 
+        setSelectedShareFile(file);
+
+        setShareDialogOpen(true);
+
+    };
+
+    const generateShareLink = async (expiry, password) => {
         try {
-
             const data = await createShareLink(
-                file._id,
-                expiry
+                selectedShareFile._id,
+                expiry,
+                password
             );
 
             setShareLink(data.shareUrl);
-
-            setShareDialogOpen(true);
-
         } catch (error) {
-
             console.error(error);
 
             alert(
-                error.response?.data?.message ||
-                "Unable to generate share link."
+                error.response?.data?.message || "Unable to generate share link."
             );
+        }
+    };
+
+    const handleDisableShare = async () => {
+
+        try {
+            await disableShare(selectedShareFile._id);
+
+            setShareLink("");
+
+            alert("Sharing disabled");
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message || "Unable to disable sharing."
+            );
+        }
+    };
+
+    const handleDropUpload = async (acceptedFiles) => {
+
+        try {
+
+            setUploading(true);
+
+            for (const file of acceptedFiles) {
+
+                setCurrentFile(file.name);
+
+                setProgress(0);
+
+                await uploadFile(
+
+                    file,
+
+                    currentFolder?._id || null,
+
+                    (value) => {
+
+                        setProgress(value);
+
+                    }
+
+                );
+
+            }
+
+            loadContent();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+        finally {
+
+            setUploading(false);
+
+            setProgress(0);
+
+            setCurrentFile("");
 
         }
 
@@ -388,21 +481,51 @@ function MainContent() {
 
         try {
 
+            setUploading(true);
+
+            setCurrentFile(file.name);
+
+            setProgress(0);
+
             await uploadFile(
+
                 file,
-                currentFolder?._id || null
+
+                currentFolder?._id || null,
+
+                (value) => {
+
+                    setProgress(value);
+
+                }
+
             );
 
             loadContent();
 
-        } catch (error) {
+        }
 
-            console.log(error);
+        catch (error) {
+
+            console.error(error);
 
             alert(
+
                 error.response?.data?.message ||
+
                 "Unable to upload file."
+
             );
+
+        }
+
+        finally {
+
+            setUploading(false);
+
+            setProgress(0);
+
+            setCurrentFile("");
 
         }
 
@@ -428,164 +551,261 @@ function MainContent() {
 
 
     return (
-        <Box
-            sx={{
-                flex: 1,
-                p: 4,
-            }}
+        <DragDropZone
+            onDrop={handleDropUpload}
         >
+            <Box
+                sx={{
+                    flex: 1,
+                    p: 4,
+                }}
+            >
 
-            <Breadcrumb />
+                <Breadcrumb />
 
-            <SearchBar
-                value={searchQuery}
-                onChange={setSearchQuery}
-            />
-
-            <FolderToolbar>
-                <CreateFolder
-                    onCreate={handleCreateFolder}
+                <SearchBar
+                    value={searchQuery}
+                    onChange={setSearchQuery}
                 />
 
-                <FileUpload
-                    onSelect={handleUpload}
+                <FolderToolbar>
+                    <CreateFolder
+                        onCreate={handleCreateFolder}
+                    />
+
+                    <FileUpload
+                        onSelect={handleUpload}
+                    />
+                </FolderToolbar>
+
+                {
+                    displayedFolders.length === 0 &&
+                    displayedFiles.length === 0 && (
+
+                        <EmptyState
+                            icon={<FolderOpenIcon fontSize="inherit" />}
+                            title="Welcome to FileBridge"
+                            description="Create your first folder or upload your first file to start organizing your documents."
+                        />
+
+                    )
+                }
+
+                {
+                    loading ? (
+
+                        <>
+
+                            <Typography
+                                variant="h5"
+                                fontWeight={600}
+                                sx={{ mt: 3, mb: 2 }}
+                            >
+                                Folders
+                            </Typography>
+
+                            <Box
+                                display="grid"
+                                gridTemplateColumns="repeat(auto-fill,minmax(280px,1fr))"
+                                gap={3}
+                            >
+                                {[...Array(6)].map((_, index) => (
+                                    <FolderSkeleton key={index} />
+                                ))}
+                            </Box>
+
+                            <Typography
+                                variant="h5"
+                                fontWeight={600}
+                                sx={{ mt: 4, mb: 2 }}
+                            >
+                                Files
+                            </Typography>
+
+                            <Box
+                                display="flex"
+                                flexDirection="column"
+                                gap={2}
+                            >
+                                {[...Array(6)].map((_, index) => (
+                                    <FileSkeleton key={index} />
+                                ))}
+                            </Box>
+
+                        </>
+
+                    ) : displayedFolders.length === 0 &&
+                        displayedFiles.length === 0 ? (
+
+                        <EmptyState
+                            icon={<FolderOpenIcon fontSize="inherit" />}
+                            title="Welcome to FileBridge"
+                            description="Create your first folder or upload your first file to start organizing your documents."
+                        />
+
+                    ) : (
+
+                        <>
+
+                            <Typography
+                                variant="h5"
+                                fontWeight={600}
+                                sx={{ mt: 3, mb: 2 }}
+                            >
+                                Folders
+                            </Typography>
+
+                            {
+                                displayedFolders.length === 0 ? (
+
+                                    <EmptyState
+                                        icon={<FolderOpenIcon fontSize="inherit" />}
+                                        title="No folders found"
+                                        description="Create your first folder to organize your files."
+                                    />
+
+                                ) : (
+
+                                    <FolderGrid
+                                        folders={displayedFolders}
+                                        onOpen={handleOpenFolder}
+                                        onDelete={handleDeleteFolder}
+                                        onRename={handleRenameFolder}
+                                        onProperties={handleFolderProperties}
+                                        onFavorite={handleFavoriteFolder}
+                                    />
+
+                                )
+                            }
+
+                            <Typography
+                                variant="h5"
+                                fontWeight={600}
+                                sx={{ mt: 4, mb: 2 }}
+                            >
+                                Files
+                            </Typography>
+
+                            {
+                                displayedFiles.length === 0 ? (
+
+                                    <EmptyState
+                                        icon={<FolderOpenIcon fontSize="inherit" />}
+                                        title="No files found"
+                                        description="Upload your first file to start building your library."
+                                    />
+
+                                ) : (
+
+                                    <FileGrid
+                                        files={displayedFiles}
+                                        onDownload={handleDownload}
+                                        onDelete={handleDeleteFile}
+                                        onRename={handleRenameFile}
+                                        onProperties={handleFileProperties}
+                                        onFavorite={handleFavoriteFile}
+                                        onShare={handleShare}
+                                    />
+
+                                )
+                            }
+
+                        </>
+
+                    )
+                }
+
+                <ConfirmDialog
+                    open={deleteDialogOpen}
+                    title="Delete Folder"
+                    message={
+                        selectedFolder
+                            ? `Are you sure you want to delete "${selectedFolder.name}"?`
+                            : ""
+                    }
+                    onCancel={() => {
+
+                        setDeleteDialogOpen(false);
+
+                        setSelectedFolder(null);
+
+                    }}
+                    onConfirm={confirmDeleteFolder}
                 />
-            </FolderToolbar>
 
-            <Typography
-                variant="h4"
-                fontWeight="bold"
-                gutterBottom
-            >
-                {currentFolder ? currentFolder.name : "Home"}
-            </Typography>
+                <ConfirmDialog
+                    open={deleteFileDialogOpen}
+                    title="Delete File"
+                    message={
+                        selectedFile
+                            ? `Are you sure you want to delete "${selectedFile.originalName}"?`
+                            : ""
+                    }
+                    onCancel={() => {
 
-            <Typography
-                color="text.secondary"
-                sx={{ mb: 3 }}
-            >
-                Store your files securely and access them from anywhere.
-            </Typography>
+                        setDeleteFileDialogOpen(false);
 
-            <Typography
-                variant="h5"
-                fontWeight={600}
-                sx={{ mt: 3, mb: 2 }}
-            >
-                Folders
-            </Typography>
+                        setSelectedFile(null);
 
-            <FolderGrid
-                folders={displayedFolders}
-                onOpen={handleOpenFolder}
-                onDelete={handleDeleteFolder}
-                onRename={handleRenameFolder}
-                onProperties={handleFolderProperties}
-                onFavorite={handleFavoriteFolder}
-            />
+                    }}
+                    onConfirm={confirmDeleteFile}
+                />
 
-            <Typography
-                variant="h5"
-                fontWeight={600}
-                sx={{ mt: 4, mb: 2 }}
-            >
-                Files
-            </Typography>
+                <RenameDialog
+                    open={renameDialogOpen}
+                    title="Rename Folder"
+                    initialValue={
+                        selectedRenameFolder?.name || ""
+                    }
+                    onCancel={() => {
 
-            <FileGrid
-                files={displayedFiles}
-                onDownload={handleDownload}
-                onDelete={handleDeleteFile}
-                onRename={handleRenameFile}
-                onProperties={handleFileProperties}
-                onFavorite={handleFavoriteFile}
-                onShare={handleShare}
-            />
+                        setRenameDialogOpen(false);
 
-            <ConfirmDialog
-                open={deleteDialogOpen}
-                title="Delete Folder"
-                message={
-                    selectedFolder
-                        ? `Are you sure you want to delete "${selectedFolder.name}"?`
-                        : ""
-                }
-                onCancel={() => {
+                        setSelectedRenameFolder(null);
 
-                    setDeleteDialogOpen(false);
+                    }}
+                    onConfirm={confirmRenameFolder}
+                />
 
-                    setSelectedFolder(null);
+                <RenameDialog
+                    open={renameFileDialogOpen}
+                    title="Rename File"
+                    initialValue={
+                        selectedRenameFile?.originalName || ""
+                    }
+                    onCancel={() => {
+                        setRenameFileDialogOpen(false);
 
-                }}
-                onConfirm={confirmDeleteFolder}
-            />
+                        setSelectedRenameFile(null);
+                    }}
 
-            <ConfirmDialog
-                open={deleteFileDialogOpen}
-                title="Delete File"
-                message={
-                    selectedFile
-                        ? `Are you sure you want to delete "${selectedFile.originalName}"?`
-                        : ""
-                }
-                onCancel={() => {
+                    onConfirm={confirmRenameFile}
+                />
 
-                    setDeleteFileDialogOpen(false);
+                <PropertiesDialog
+                    open={propertiesOpen}
+                    title={propertiesTitle}
+                    properties={properties}
+                    onClose={() => setPropertiesOpen(false)}
+                />
 
-                    setSelectedFile(null);
+                <ShareDialog
+                    open={shareDialogOpen}
+                    link={shareLink}
+                    onClose={() => {
 
-                }}
-                onConfirm={confirmDeleteFile}
-            />
+                        setShareDialogOpen(false);
 
-            <RenameDialog
-                open={renameDialogOpen}
-                title="Rename Folder"
-                initialValue={
-                    selectedRenameFolder?.name || ""
-                }
-                onCancel={() => {
+                        setShareLink("");
 
-                    setRenameDialogOpen(false);
+                        setSelectedShareFile(null);
 
-                    setSelectedRenameFolder(null);
-
-                }}
-                onConfirm={confirmRenameFolder}
-            />
-
-            <RenameDialog
-                open={renameFileDialogOpen}
-                title="Rename File"
-                initialValue={
-                    selectedRenameFile?.originalName || ""
-                }
-                onCancel={() => {
-                    setRenameFileDialogOpen(false);
-
-                    setSelectedRenameFile(null);
-                }}
-
-                onConfirm={confirmRenameFile}
-            />
-
-            <PropertiesDialog
-                open={propertiesOpen}
-                title={propertiesTitle}
-                properties={properties}
-                onClose={() => setPropertiesOpen(false)}
-            />
-
-            <ShareDialog
-                open={shareDialogOpen}
-                link={shareLink}
-                onClose={() => {
-                    setShareDialogOpen(false);
-
-                    setShareLink("");
-                }}
-            />
-        </Box>
+                    }}
+                    onGenerate={generateShareLink}
+                    onDisable={handleDisableShare}
+                />
+            </Box>
+        </DragDropZone>
     );
 }
 

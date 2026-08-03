@@ -9,6 +9,7 @@ const searchRoutes = require("./routes/searchRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const recycleBinRoutes = require("./routes/recycleBinRoutes");
 const shareRoutes = require("./routes/shareRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use("/api/search", searchRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/recycle-bin", recycleBinRoutes);
 app.use("/api/share", shareRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 module.exports = app;

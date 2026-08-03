@@ -67,6 +67,10 @@ const fileSchema = new mongoose.Schema(
         shareExpiry: {
             type: Date,
             default: null,
+        },
+        sharePassword: {
+            type: String,
+            default: null,
         }
     },
     {

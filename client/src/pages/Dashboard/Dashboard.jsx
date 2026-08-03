@@ -1,10 +1,11 @@
 import Navbar from "../../components/layout/Navbar";
-import Sidebar from "../../components/layout/Sidebar";
 import MainContent from "../../components/layout/MainContent";
+import DashboardOverview from "../../components/dashboard/DashboardOverview";
 
 function Dashboard() {
 
     return (
+
         <div
             style={{
                 height: "100vh",
@@ -12,19 +13,26 @@ function Dashboard() {
                 flexDirection: "column",
             }}
         >
+
             <Navbar />
 
             <div
                 style={{
-                    display: "flex",
                     flex: 1,
+                    overflowY: "auto",
                 }}
             >
 
+                <DashboardOverview />
+
                 <MainContent />
+
             </div>
+
         </div>
+
     );
+
 }
 
 export default Dashboard;

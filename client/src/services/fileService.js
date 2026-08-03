@@ -1,6 +1,10 @@
 import api from "./api";
 
-export const uploadFile = async (file, folder = null) => {
+export const uploadFile = async (
+    file,
+    folder = null,
+    onProgress = null
+) => {
 
     const formData = new FormData();
 
@@ -17,6 +21,21 @@ export const uploadFile = async (file, folder = null) => {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
+
+            onUploadProgress: (progressEvent) => {
+
+                if (!progressEvent.total) return;
+
+                const percentCompleted = Math.round(
+                    (progressEvent.loaded * 100) /
+                    progressEvent.total
+                );
+
+                if (onProgress) {
+                    onProgress(percentCompleted);
+                }
+
+            },
         }
     );
 
@@ -24,19 +43,23 @@ export const uploadFile = async (file, folder = null) => {
 };
 
 export const getFiles = async (folder = null) => {
-    const response = await api.get("/files", {
-        params: {
-            folder,
-        },
-    });
+
+    const response = await api.get(
+        "/files",
+        {
+            params: {
+                folder,
+            },
+        }
+    );
 
     return response.data;
 };
 
 export const downloadFile = async (fileId, fileName) => {
+
     const response = await api.get(
         `/files/download/${fileId}`,
-
         {
             responseType: "blob",
         }
@@ -59,6 +82,7 @@ export const downloadFile = async (fileId, fileName) => {
     link.remove();
 
     window.URL.revokeObjectURL(url);
+
 };
 
 export const deleteFile = async (id) => {
@@ -71,33 +95,54 @@ export const deleteFile = async (id) => {
 
 };
 
-export const renameFile = async (id, originalName) => {
+export const renameFile = async (
+    id,
+    originalName
+) => {
+
     const response = await api.put(
         `/files/${id}`,
-        { originalName }
+        {
+            originalName,
+        }
     );
 
     return response.data;
+
 };
 
 export const toggleFavoriteFile = async (id) => {
+
     const response = await api.patch(
         `/files/favorite/${id}`
     );
 
     return response.data;
+
 };
 
 export const createShareLink = async (
     id,
-    expiry = "never"
+    expiry = "never",
+    password = ""
 ) => {
 
     const { data } = await api.post(
         `/share/${id}`,
         {
             expiry,
+            password,
         }
+    );
+
+    return data;
+
+};
+
+export const disableShare = async (id) => {
+
+    const { data } = await api.patch(
+        `/share/${id}/disable`
     );
 
     return data;

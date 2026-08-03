@@ -1,6 +1,6 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
 
-function ConfirmDialog({ open, title, message, onCancel, onConfirm }) {
+function ConfirmDialog({ open, title, message, onCancel, onConfirm, confirmText = "Delete", confirmColor = "error" }) {
     return (
         <Dialog
             open={open}
@@ -26,11 +26,11 @@ function ConfirmDialog({ open, title, message, onCancel, onConfirm }) {
                 </Button>
 
                 <Button
-                    color="error"
                     variant="contained"
+                    color={confirmColor}
                     onClick={onConfirm}
                 >
-                    Delete
+                    {confirmText}
                 </Button>
             </DialogActions>
         </Dialog>

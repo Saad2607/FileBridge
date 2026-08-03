@@ -9,6 +9,8 @@ import { ROUTES } from "../constants/routes";
 import ProtectedRoute from "./ProtectedRoutes";
 import AppLayout from "../components/layout/AppLayout";
 import RecycleBin from "../pages/RecycleBin";
+import SharePage from "../pages/SharePage";
+import SharedFiles from "../pages/SharedFiles";
 
 function AppRoutes() {
     return (
@@ -33,6 +35,16 @@ function AppRoutes() {
                 <Route
                     path={ROUTES.RECYCLE_BIN}
                     element={<RecycleBin />}
+                />
+
+                <Route
+                    path={ROUTES.SHARE}
+                    element={<SharePage />}
+                />
+
+                <Route
+                    path={ROUTES.SHARED_FILES}
+                    element={<SharedFiles />}
                 />
             </Route>
         </Routes>

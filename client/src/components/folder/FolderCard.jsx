@@ -1,83 +1,99 @@
-import { useState } from "react";
-
 import FolderIcon from "@mui/icons-material/Folder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-
-import ActionMenu from "../common/ActionMenu";
 
 import {
     Card,
     CardContent,
     Typography,
     Box,
-    IconButton,
-    Menu,
-    MenuItem,
+    Chip,
 } from "@mui/material";
 
-function FolderCard({ folder, onOpen, onDelete, onRename, onProperties, onFavorite }) {
+import ActionMenu from "../common/ActionMenu";
 
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const open = Boolean(anchorEl);
-
-    const handleMenuOpen = (event) => {
-        event.stopPropagation();
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
+function FolderCard({
+    folder,
+    onOpen,
+    onDelete,
+    onRename,
+    onProperties,
+    onFavorite,
+}) {
     return (
         <Card
-            elevation={2}
+            elevation={0}
             sx={{
-                mb: 2,
-                borderRadius: 2,
-                transition: "0.2s",
+                borderRadius: 4,
+                border: "1px solid #E5E7EB",
+                transition: "all .25s ease",
+                cursor: "pointer",
+                overflow: "hidden",
+
                 "&:hover": {
-                    transform: "translateY(-2px)",
-                    boxShadow: 6,
+                    transform: "translateY(-6px)",
+                    boxShadow: "0 12px 32px rgba(0,0,0,.12)",
                 },
             }}
         >
-            <CardContent>
-
+            <CardContent sx={{ p: 3 }}>
                 <Box
                     display="flex"
                     justifyContent="space-between"
-                    alignItems="center"
+                    alignItems="flex-start"
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        width: "100%",
+                    }}
                 >
-
                     <Box
-                        display="flex"
-                        alignItems="center"
-                        gap={2}
+
                         sx={{
-                            cursor: "pointer",
+                            cursor: "pointer", 
+                            display: "flex",
+                            gap: 2,
                             flex: 1,
+                            minWidth: 0,
                         }}
                         onClick={() => onOpen(folder)}
                     >
                         <FolderIcon
-                            color="primary"
-                            fontSize="large"
+                            sx={{
+                                fontSize: 55,
+                                color: "#1976d2",
+                            }}
                         />
 
-                        <Typography variant="h6">
-                            {folder.name}
-                        </Typography>
+                        <Box flex={1}>
+                            <Typography
+                                variant="h6"
+                                fontWeight={700}
+                                noWrap
+                            >
+                                {folder.name}
+                            </Typography>
 
-                        {folder.favorite && (
-                            <FavoriteIcon
-                                color="warning"
-                                fontSize="small"
-                            />
-                        )}
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mt: 0.5 }}
+                            >
+                                Created{" "}
+                                {new Date(
+                                    folder.createdAt
+                                ).toLocaleDateString()}
+                            </Typography>
+
+                            {folder.favorite && (
+                                <Chip
+                                    label="Favorite"
+                                    color="warning"
+                                    size="small"
+                                    sx={{ mt: 2 }}
+                                />
+                            )}
+                        </Box>
                     </Box>
-
 
                     <ActionMenu
                         items={[
@@ -86,37 +102,22 @@ function FolderCard({ folder, onOpen, onDelete, onRename, onProperties, onFavori
                                 onClick: () => onRename(folder),
                             },
                             {
-                                label: "Delete",
-                                onClick: () => onDelete(folder),
+                                label: folder.favorite
+                                    ? "Remove Favorite"
+                                    : "Add to Favorites",
+                                onClick: () => onFavorite(folder),
                             },
                             {
                                 label: "Properties",
                                 onClick: () => onProperties(folder),
                             },
                             {
-                                label: folder.favorite ? "Remove Favorite" : "Add to Favorites",
-                                onClick: () => onFavorite(folder),
-                            }
+                                label: "Delete",
+                                onClick: () => onDelete(folder),
+                            },
                         ]}
                     />
-
                 </Box>
-
-                <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleMenuClose}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            handleMenuClose();
-                            onDelete(folder);
-                        }}
-                    >
-                        Delete
-                    </MenuItem>
-                </Menu>
-
             </CardContent>
         </Card>
     );
