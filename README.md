@@ -37,23 +37,30 @@ The application focuses on providing a clean architecture, scalable backend, reu
 - Restore Deleted Folders
 - Permanent Delete
 - Favorite Folders
+- Folder Properties
+- Modern Folder Cards
 
 ---
 
 ## 📄 File Management
 
 - Upload Files
+- Drag & Drop Upload
+- Upload Progress Indicator
 - Download Files
 - Rename Files
 - Soft Delete
 - Restore Deleted Files
 - Permanent Delete
 - Favorite Files
+- File Properties
+- Modern File Cards
 
 ---
 
 ## 🔍 Search
 
+- Global Search
 - Search Files
 - Search Folders
 - Instant Search Results
@@ -62,8 +69,8 @@ The application focuses on providing a clean architecture, scalable backend, reu
 
 ## ⭐ Favorites
 
-- Mark Files as Favorite
-- Mark Folders as Favorite
+- Favorite Files
+- Favorite Folders
 - Dedicated Favorites Page
 
 ---
@@ -79,11 +86,25 @@ The application focuses on providing a clean architecture, scalable backend, reu
 
 ## 🔗 File Sharing
 
-- Generate Public Share Links
-- UUID-Based Secure Links
-- Copy Link to Clipboard
+- UUID Secure Share Links
 - Public File Download
-- Share Dialog UI
+- Copy Share Link
+- Share Dialog
+- Disable Sharing
+- Configurable Link Expiry
+- Password Protected Sharing (UI)
+
+---
+
+## 📊 Dashboard
+
+- Storage Usage Card
+- Dashboard Statistics
+- Recent Files
+- Recent Activity Panel
+- Quick Actions Panel
+- Storage Progress
+- Responsive Dashboard
 
 ---
 
@@ -92,45 +113,65 @@ The application focuses on providing a clean architecture, scalable backend, reu
 - Material UI
 - Responsive Layout
 - Sidebar Navigation
-- Reusable Components
-- Dialog System
+- Sticky Navbar
+- Dashboard Overview
+- Folder Grid
+- File Grid
+- Empty States
+- Loading Skeletons
 - Action Menus
-- Modern Dashboard
+- Dialog System
+- Breadcrumb Navigation
+- Upload Progress
+- Explorer Toolbar (Search, Sort, Filter, View Toggle)
+- Modern Cards & Hover Effects
 
 ---
 
 ## 🏗 Architecture
 
-- RESTful API
+- REST API
 - Context API
 - Component-Based React
 - Modular Backend
 - JWT Authentication
 - MongoDB Data Modeling
+- Reusable UI Components
+- Service Layer Architecture
 
 ---
 
 # 🚀 Upcoming Features
 
-## Sharing
+## Explorer
 
-- Password Protected Links
-- Link Expiry
-- Disable Sharing
-- Share Permissions
+- Functional Sorting
+- Advanced Filtering
+- Grid/List View Persistence
+- Multi Select
+- Bulk Operations
 
-## File Management
+## File Preview
 
-- Drag & Drop Upload
-- File Preview
-- Multiple File Upload
-- Folder Color Tags
+- Image Preview
+- PDF Viewer
+- Video Preview
+- Audio Preview
+- Office Document Preview
 
 ## Dashboard
 
 - Storage Analytics
-- Recent Files
-- Activity Feed
+- Charts
+- File Type Statistics
+- Upload History
+
+## Sharing
+
+- Email Sharing
+- Permission Management
+- Collaboration
+- Shared Workspace
 
 ## User Settings
 
@@ -138,12 +179,21 @@ The application focuses on providing a clean architecture, scalable backend, reu
 - Change Password
 - Avatar Upload
 - Dark Mode
+- Notification Preferences
 
 ## Desktop
 
 - Electron Desktop Client
 - Automatic File Sync
-- Offline Support
+- Offline Mode
+- Background Sync
+
+## Advanced
+
+- File Versioning
+- Activity Logs
+- Notifications
+- Real-time Updates
 
 ---
 
@@ -156,6 +206,7 @@ The application focuses on providing a clean architecture, scalable backend, reu
 - Context API
 - Axios
 - Material UI
+- React Dropzone
 
 ## Backend
 
@@ -180,8 +231,22 @@ FileBridge/
 │
 ├── client/
 │   ├── src/
-│   ├── public/
-│   └── package.json
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   ├── dashboard/
+│   │   ├── file/
+│   │   ├── folder/
+│   │   ├── layout/
+│   │   ├── share/
+│   │   ├── skeleton/
+│   │   └── upload/
+│   │
+│   ├── context/
+│   ├── pages/
+│   ├── services/
+│   ├── utils/
+│   └── constants/
 │
 ├── server/
 │   ├── controllers/
@@ -189,11 +254,9 @@ FileBridge/
 │   ├── models/
 │   ├── routes/
 │   ├── uploads/
-│   └── package.json
+│   └── utils/
 │
-├── docs/
-│
-├── desktop/          # Planned
+├── desktop/        # Planned
 │
 └── README.md
 ```
@@ -272,50 +335,64 @@ Screenshots will be added as development progresses.
 
 # 📌 Current Progress
 
-## Completed
+## ✅ Completed
 
-- Authentication
+- Authentication System
 - Dashboard
 - Folder Management
+- File Management
 - File Upload
+- Drag & Drop Upload
 - File Download
 - Rename
 - Search
 - Favorites
 - Recycle Bin
 - File Sharing (v1)
+- Properties Dialog
 - Responsive UI
+- Dashboard Widgets
+- Loading Skeletons
+- Upload Progress
+- Explorer Toolbar UI
+- Modern Card-based Interface
 - Logout
 
 ---
 
-## In Progress
+## 🚧 In Progress
 
-- Advanced File Sharing
+- Explorer Sorting
+- Explorer Filtering
+- Grid/List View
 - User Settings
-- Storage Dashboard
+- Storage Analytics
 
 ---
 
-## Planned
+## 📅 Planned
 
-- Electron Desktop Sync
-- File Versioning
+- Electron Desktop Client
+- Automatic Synchronization
 - Notifications
 - Real-time Updates
-- Multi-device Synchronization
+- Multi-device Support
+- File Preview
+- Dark Mode
 
 ---
 
 # 🎯 Learning Goals
 
 - Build a production-ready MERN application
-- Learn scalable backend architecture
-- Design reusable React components
+- Design scalable REST APIs
+- Create reusable React components
+- Learn advanced Material UI design
 - Implement secure authentication
-- Develop RESTful APIs
-- Build a cloud storage platform from scratch
-- Explore desktop synchronization using Electron
+- Develop cloud storage architecture
+- Build an Electron desktop sync client
+- Practice modern frontend architecture
+- Improve UX/UI design skills
 
 ---
 

@@ -38,6 +38,12 @@ import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import FolderSkeleton from "../skeleton/FolderSkeleton";
 import FileSkeleton from "../skeleton/FileSkeleton";
 
+import SectionHeader from "../common/SectionHeader";
+import RecentActivity from "../dashboard/RecentActivity";
+import QuickActions from "../dashboard/QuickActions";
+
+import ExplorerToolbar from "../common/ExplorerToolbar";
+
 function MainContent() {
 
     const {
@@ -91,6 +97,12 @@ function MainContent() {
     const [shareLink, setShareLink] = useState("");
 
     const [selectedShareFile, setSelectedShareFile] = useState(null);
+
+    const [view, setView] = useState("grid");
+
+    const [sort, setSort] = useState("Newest");
+
+    const [filter, setFilter] = useState("All");
 
     useEffect(() => {
         loadContent();
@@ -563,9 +575,19 @@ function MainContent() {
 
                 <Breadcrumb />
 
-                <SearchBar
-                    value={searchQuery}
-                    onChange={setSearchQuery}
+                <ExplorerToolbar
+                    totalItems={
+                        displayedFolders.length +
+                        displayedFiles.length
+                    }
+                    search={searchQuery}
+                    onSearch={setSearchQuery}
+                    sort={sort}
+                    onSort={setSort}
+                    filter={filter}
+                    onFilter={setFilter}
+                    view={view}
+                    onViewChange={setView}
                 />
 
                 <FolderToolbar>
@@ -577,6 +599,27 @@ function MainContent() {
                         onSelect={handleUpload}
                     />
                 </FolderToolbar>
+
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: {
+                            xs: "1fr",
+                            lg: "2fr 1fr",
+                        },
+                        gap: 3,
+                        mb: 4,
+                    }}
+                >
+                    <RecentActivity />
+
+                    <QuickActions
+                        onCreateFolder={() => { }}
+                        onUploadFile={() => { }}
+                        onUploadFolder={() => { }}
+                        onSharedFiles={() => { }}
+                    />
+                </Box>
 
                 {
                     displayedFolders.length === 0 &&
@@ -596,13 +639,10 @@ function MainContent() {
 
                         <>
 
-                            <Typography
-                                variant="h5"
-                                fontWeight={600}
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Folders
-                            </Typography>
+                            <SectionHeader
+                                title="Folders"
+                                count={displayedFolders.length}
+                            />
 
                             <Box
                                 display="grid"
@@ -614,13 +654,10 @@ function MainContent() {
                                 ))}
                             </Box>
 
-                            <Typography
-                                variant="h5"
-                                fontWeight={600}
-                                sx={{ mt: 4, mb: 2 }}
-                            >
-                                Files
-                            </Typography>
+                            <SectionHeader
+                                title="Files"
+                                count={displayedFiles.length}
+                            />
 
                             <Box
                                 display="flex"
@@ -647,13 +684,10 @@ function MainContent() {
 
                         <>
 
-                            <Typography
-                                variant="h5"
-                                fontWeight={600}
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Folders
-                            </Typography>
+                            <SectionHeader
+                                title="Folders"
+                                count={displayedFolders.length}
+                            />
 
                             {
                                 displayedFolders.length === 0 ? (
@@ -678,13 +712,10 @@ function MainContent() {
                                 )
                             }
 
-                            <Typography
-                                variant="h5"
-                                fontWeight={600}
-                                sx={{ mt: 4, mb: 2 }}
-                            >
-                                Files
-                            </Typography>
+                            <SectionHeader
+                                title="Files"
+                                count={displayedFiles.length}
+                            />
 
                             {
                                 displayedFiles.length === 0 ? (

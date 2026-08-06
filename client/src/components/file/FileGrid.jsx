@@ -1,10 +1,19 @@
 import { Grid } from "@mui/material";
 import FileCard from "./FileCard";
 
-function FileGrid({ files, onDownload, onDelete, onRename, onProperties, onFavorite, onShare }) {
+function FileGrid({
+    files,
+    onOpen,
+    onDownload,
+    onDelete,
+    onRename,
+    onProperties,
+    onFavorite,
+    onShare,
+}) {
 
     if (files.length === 0) {
-        return <p>No files found.</p>;
+        return null;
     }
 
     return (
@@ -17,6 +26,7 @@ function FileGrid({ files, onDownload, onDelete, onRename, onProperties, onFavor
                 >
                     <FileCard
                         file={file}
+                        onOpen={onOpen}
                         onDownload={onDownload}
                         onDelete={onDelete}
                         onRename={onRename}

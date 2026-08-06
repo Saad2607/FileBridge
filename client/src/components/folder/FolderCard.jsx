@@ -1,4 +1,7 @@
 import FolderIcon from "@mui/icons-material/Folder";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import StarIcon from "@mui/icons-material/Star";
 
 import {
     Card,
@@ -6,6 +9,7 @@ import {
     Typography,
     Box,
     Chip,
+    Avatar,
 } from "@mui/material";
 
 import ActionMenu from "../common/ActionMenu";
@@ -18,82 +22,74 @@ function FolderCard({
     onProperties,
     onFavorite,
 }) {
+
     return (
+
         <Card
             elevation={0}
             sx={{
-                borderRadius: 4,
+
+                borderRadius: 5,
+
                 border: "1px solid #E5E7EB",
-                transition: "all .25s ease",
-                cursor: "pointer",
+
+                bgcolor: "#fff",
+
                 overflow: "hidden",
 
+                cursor: "pointer",
+
+                transition: ".25s",
+
                 "&:hover": {
-                    transform: "translateY(-6px)",
-                    boxShadow: "0 12px 32px rgba(0,0,0,.12)",
+
+                    transform: "translateY(-8px)",
+
+                    boxShadow: "0 20px 45px rgba(0,0,0,.12)",
+
+                    borderColor: "#1976d2",
+
                 },
+
             }}
         >
+
+            {/* Top Accent */}
+
+            <Box
+                sx={{
+                    height: 6,
+                    background:
+                        "linear-gradient(90deg,#1976d2,#42a5f5)",
+                }}
+            />
+
             <CardContent sx={{ p: 3 }}>
+
+                {/* Header */}
+
                 <Box
                     display="flex"
                     justifyContent="space-between"
                     alignItems="flex-start"
-                    sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        width: "100%",
-                    }}
                 >
-                    <Box
 
-                        sx={{
-                            cursor: "pointer", 
-                            display: "flex",
-                            gap: 2,
-                            flex: 1,
-                            minWidth: 0,
-                        }}
+                    <Avatar
                         onClick={() => onOpen(folder)}
+                        sx={{
+                            bgcolor: "#E8F1FD",
+                            width: 64,
+                            height: 64,
+                            cursor: "pointer",
+                        }}
                     >
                         <FolderIcon
                             sx={{
-                                fontSize: 55,
+                                fontSize: 38,
                                 color: "#1976d2",
                             }}
                         />
-
-                        <Box flex={1}>
-                            <Typography
-                                variant="h6"
-                                fontWeight={700}
-                                noWrap
-                            >
-                                {folder.name}
-                            </Typography>
-
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ mt: 0.5 }}
-                            >
-                                Created{" "}
-                                {new Date(
-                                    folder.createdAt
-                                ).toLocaleDateString()}
-                            </Typography>
-
-                            {folder.favorite && (
-                                <Chip
-                                    label="Favorite"
-                                    color="warning"
-                                    size="small"
-                                    sx={{ mt: 2 }}
-                                />
-                            )}
-                        </Box>
-                    </Box>
+                    </Avatar>
 
                     <ActionMenu
                         items={[
@@ -117,10 +113,131 @@ function FolderCard({
                             },
                         ]}
                     />
+
                 </Box>
+
+                {/* Folder Name */}
+
+                <Box
+                    mt={3}
+                    onClick={() => onOpen(folder)}
+                    sx={{ cursor: "pointer" }}
+                >
+
+                    <Typography
+                        variant="h6"
+                        fontWeight={700}
+                        noWrap
+                    >
+                        {folder.name}
+                    </Typography>
+
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                            mt: .5,
+                        }}
+                    >
+                        Your Folder
+                    </Typography>
+
+                </Box>
+
+                {/* Info */}
+
+                <Box
+                    mt={3}
+                    display="flex"
+                    justifyContent="space-between"
+                >
+
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={0.8}
+                    >
+
+                        <AccessTimeIcon
+                            sx={{
+                                fontSize: 18,
+                                color: "#9E9E9E",
+                            }}
+                        />
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
+                            {new Date(
+                                folder.createdAt
+                            ).toLocaleDateString()}
+                        </Typography>
+
+                    </Box>
+
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={0.8}
+                    >
+
+                        <InsertDriveFileIcon
+                            sx={{
+                                fontSize: 18,
+                                color: "#9E9E9E",
+                            }}
+                        />
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
+                            Folder
+                        </Typography>
+
+                    </Box>
+
+                </Box>
+
+                {/* Bottom */}
+
+                <Box
+                    mt={3}
+                    display="flex"
+                    gap={1}
+                    flexWrap="wrap"
+                >
+
+                    <Chip
+                        label="Folder"
+                        size="small"
+                        variant="outlined"
+                    />
+
+                    {
+
+                        folder.favorite && (
+
+                            <Chip
+                                icon={<StarIcon />}
+                                label="Favorite"
+                                color="warning"
+                                size="small"
+                            />
+
+                        )
+
+                    }
+
+                </Box>
+
             </CardContent>
+
         </Card>
+
     );
+
 }
 
 export default FolderCard;

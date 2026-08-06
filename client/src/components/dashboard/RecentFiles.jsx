@@ -6,6 +6,7 @@ import {
     Avatar,
     Divider,
     Chip,
+    Button,
 } from "@mui/material";
 
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -13,23 +14,17 @@ import ImageIcon from "@mui/icons-material/Image";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 function RecentFiles({ files }) {
 
     const formatFileSize = (bytes) => {
 
-        if (!bytes) return "0 Bytes";
+        if (!bytes) return "0 B";
 
-        const sizes = [
-            "Bytes",
-            "KB",
-            "MB",
-            "GB",
-        ];
+        const sizes = ["B", "KB", "MB", "GB"];
 
-        const i = Math.floor(
-            Math.log(bytes) / Math.log(1024)
-        );
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
         return (
             (bytes / Math.pow(1024, i)).toFixed(1) +
@@ -41,8 +36,7 @@ function RecentFiles({ files }) {
 
     const getIcon = (name) => {
 
-        const ext =
-            name.split(".").pop().toLowerCase();
+        const ext = name.split(".").pop().toLowerCase();
 
         switch (ext) {
 
@@ -67,6 +61,17 @@ function RecentFiles({ files }) {
 
     };
 
+    const getExtension = (name) => {
+
+        if (!name.includes(".")) return "FILE";
+
+        return name
+            .split(".")
+            .pop()
+            .toUpperCase();
+
+    };
+
     return (
 
         <Card
@@ -75,57 +80,66 @@ function RecentFiles({ files }) {
                 borderRadius: 4,
                 border: "1px solid #E5E7EB",
                 overflow: "hidden",
-                transition: "all .25s ease",
-
-                "&:hover": {
-                    boxShadow:
-                        "0 12px 30px rgba(0,0,0,.12)",
-                },
+                bgcolor: "#fff",
             }}
         >
 
-            <Box
-                sx={{
-                    height: 5,
-                    bgcolor: "#1976d2",
-                }}
-            />
+            <CardContent sx={{ p: 3 }}>
 
-            <CardContent
-                sx={{
-                    p: 3,
-                }}
-            >
-
-                <Typography
-                    variant="h6"
-                    fontWeight={700}
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
                     mb={3}
                 >
-                    Recent Files
-                </Typography>
+
+                    <Typography
+                        variant="h6"
+                        fontWeight={700}
+                    >
+                        Recent Files
+                    </Typography>
+
+                    <Button
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                            textTransform: "none",
+                            fontWeight: 600,
+                        }}
+                    >
+                        View All
+                    </Button>
+
+                </Box>
 
                 {
 
                     files.length === 0 ? (
 
                         <Box
-                            py={5}
                             textAlign="center"
+                            py={7}
                         >
 
                             <InsertDriveFileIcon
                                 sx={{
-                                    fontSize: 60,
-                                    color: "#BDBDBD",
+                                    fontSize: 70,
+                                    color: "#CFD8DC",
                                 }}
                             />
 
                             <Typography
                                 mt={2}
-                                color="text.secondary"
+                                fontWeight={600}
                             >
-                                No recent files
+                                No Recent Files
+                            </Typography>
+
+                            <Typography
+                                color="text.secondary"
+                                mt={1}
+                            >
+                                Uploaded files will appear here.
                             </Typography>
 
                         </Box>
@@ -134,89 +148,94 @@ function RecentFiles({ files }) {
 
                         files.map((file, index) => (
 
-                            <Box
-                                key={file._id}
-                            >
+                            <Box key={file._id}>
 
                                 <Box
                                     display="flex"
                                     alignItems="center"
-                                    gap={2}
+                                    justifyContent="space-between"
                                     sx={{
-                                        py: 1.5,
-                                        px: 1,
-                                        borderRadius: 2,
-                                        cursor: "pointer",
-
-                                        transition:
-                                            ".2s",
+                                        px: 2,
+                                        py: 2,
+                                        borderRadius: 3,
+                                        transition: ".25s",
 
                                         "&:hover": {
-
-                                            bgcolor:
-                                                "#F8FAFC",
-
+                                            bgcolor: "#F8FAFC",
+                                            transform: "translateX(6px)",
                                         },
-
                                     }}
                                 >
 
-                                    <Avatar
-                                        sx={{
-                                            bgcolor:
-                                                "#EEF4FF",
-                                        }}
-                                    >
-                                        {
-                                            getIcon(
-                                                file.originalName
-                                            )
-                                        }
-                                    </Avatar>
-
                                     <Box
-                                        flex={1}
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={2}
                                     >
 
-                                        <Typography
-                                            fontWeight={600}
-                                            noWrap
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: "#EEF4FF",
+                                                width: 48,
+                                                height: 48,
+                                            }}
                                         >
-                                            {
-                                                file.originalName
-                                            }
-                                        </Typography>
+                                            {getIcon(file.originalName)}
+                                        </Avatar>
 
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                        >
-                                            {
-                                                new Date(
+                                        <Box>
+
+                                            <Typography
+                                                fontWeight={600}
+                                            >
+                                                {file.originalName}
+                                            </Typography>
+
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
+                                                {new Date(
                                                     file.createdAt
-                                                ).toLocaleDateString()
-                                            }
-                                        </Typography>
+                                                ).toLocaleDateString()}
+                                            </Typography>
+
+                                        </Box>
 
                                     </Box>
 
-                                    <Chip
-                                        label={
-                                            formatFileSize(
-                                                file.size
-                                            )
-                                        }
-                                        size="small"
-                                        variant="outlined"
-                                    />
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        gap={2}
+                                    >
+
+                                        <Chip
+                                            label={getExtension(file.originalName)}
+                                            size="small"
+                                            color="primary"
+                                            variant="outlined"
+                                        />
+
+                                        <Typography
+                                            fontWeight={600}
+                                            color="text.secondary"
+                                            minWidth={70}
+                                            textAlign="right"
+                                        >
+                                            {formatFileSize(file.size)}
+                                        </Typography>
+
+                                    </Box>
 
                                 </Box>
 
                                 {
 
-                                    index !==
-                                        files.length - 1 && (
+                                    index !== files.length - 1 && (
+
                                         <Divider />
+
                                     )
 
                                 }

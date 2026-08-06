@@ -2,24 +2,28 @@ import Navbar from "../../components/layout/Navbar";
 import MainContent from "../../components/layout/MainContent";
 import DashboardOverview from "../../components/dashboard/DashboardOverview";
 
+import Box from "@mui/material/Box";
+
 function Dashboard() {
 
     return (
 
-        <div
-            style={{
+        <Box
+            sx={{
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
+                bgcolor: "#F6F8FB",
             }}
         >
 
             <Navbar />
 
-            <div
-                style={{
+            <Box
+                sx={{
                     flex: 1,
                     overflowY: "auto",
+                    p: 4,
                 }}
             >
 
@@ -27,9 +31,9 @@ function Dashboard() {
 
                 <MainContent />
 
-            </div>
+            </Box>
 
-        </div>
+        </Box>
 
     );
 

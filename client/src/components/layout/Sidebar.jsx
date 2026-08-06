@@ -6,6 +6,8 @@ import {
     ListItemText,
     Typography,
     Divider,
+    Avatar,
+    Chip,
 } from "@mui/material";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -30,7 +32,10 @@ function Sidebar() {
 
     const navigate = useNavigate();
 
-    const { setToken, setUser } = useContext(AuthContext);
+    const { user, setToken, setUser } = useContext(AuthContext);
+
+    const initials =
+        user?.username?.charAt(0)?.toUpperCase() || "U";
 
     const menuItems = [
         {
@@ -81,13 +86,13 @@ function Sidebar() {
 
         <Box
             sx={{
-                width: 270,
-                bgcolor: "#fff",
+                width: 280,
+                bgcolor: "#FFFFFF",
                 borderRight: "1px solid #ECEFF1",
                 display: "flex",
                 flexDirection: "column",
                 height: "100vh",
-                p: 2,
+                p: 3,
             }}
         >
 
@@ -100,19 +105,76 @@ function Sidebar() {
                 mb={4}
             >
 
-                <CloudIcon
+                <Avatar
                     sx={{
-                        color: "#1976d2",
-                        fontSize: 34,
+                        bgcolor: "#1976d2",
+                        width: 46,
+                        height: 46,
                     }}
-                />
-
-                <Typography
-                    variant="h5"
-                    fontWeight={700}
                 >
-                    FileBridge
-                </Typography>
+                    <CloudIcon />
+                </Avatar>
+
+                <Box>
+
+                    <Typography
+                        variant="h5"
+                        fontWeight={700}
+                    >
+                        FileBridge
+                    </Typography>
+
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                    >
+                        Cloud Storage
+                    </Typography>
+
+                </Box>
+
+            </Box>
+
+            {/* User */}
+
+            <Box
+                display="flex"
+                alignItems="center"
+                gap={2}
+                mb={4}
+                p={2}
+                sx={{
+                    bgcolor: "#F8FAFC",
+                    borderRadius: 3,
+                }}
+            >
+
+                <Avatar
+                    sx={{
+                        bgcolor: "#1976d2",
+                    }}
+                >
+                    {initials}
+                </Avatar>
+
+                <Box>
+
+                    <Typography
+                        fontWeight={600}
+                    >
+                        {user?.username}
+                    </Typography>
+
+                    <Chip
+                        size="small"
+                        label="Free Plan"
+                        color="primary"
+                        sx={{
+                            mt: .5,
+                        }}
+                    />
+
+                </Box>
 
             </Box>
 
@@ -121,20 +183,15 @@ function Sidebar() {
                 sx={{
                     color: "text.secondary",
                     fontWeight: 700,
-                    ml: 2,
-                    mb: 1,
-                    textTransform: "uppercase",
+                    mb: 1.5,
+                    ml: 1,
                     letterSpacing: 1,
                 }}
             >
-                Workspace
+                WORKSPACE
             </Typography>
 
-            <List
-                sx={{
-                    p: 0,
-                }}
-            >
+            <List sx={{ p: 0 }}>
 
                 {
 
@@ -154,32 +211,35 @@ function Sidebar() {
 
                                     borderRadius: 3,
 
+                                    py: 1.3,
+
+                                    px: 2,
+
                                     mb: 1,
 
-                                    py: 1.2,
-
-                                    transition: ".2s",
+                                    transition: ".25s",
 
                                     "&:hover": {
 
-                                        bgcolor: "#F4F8FF",
+                                        bgcolor: "#F5F9FF",
 
                                         transform:
-                                            "translateX(4px)",
+                                            "translateX(6px)",
 
                                     },
 
                                     "&.Mui-selected": {
 
-                                        bgcolor: "#E8F0FE",
+                                        bgcolor: "#1976d2",
 
-                                        color: "#1976d2",
+                                        color: "#fff",
 
-                                        fontWeight: 700,
+                                        boxShadow:
+                                            "0 10px 20px rgba(25,118,210,.25)",
 
                                         "& .MuiListItemIcon-root": {
 
-                                            color: "#1976d2",
+                                            color: "#fff",
 
                                         },
 
@@ -190,7 +250,7 @@ function Sidebar() {
 
                                 <ListItemIcon
                                     sx={{
-                                        minWidth: 42,
+                                        minWidth: 40,
                                     }}
                                 >
                                     {item.icon}
@@ -212,7 +272,7 @@ function Sidebar() {
 
             <Box flex={1} />
 
-            <Divider sx={{ mb: 2 }} />
+            <Divider sx={{ my: 2 }} />
 
             <ListItemButton
                 onClick={handleLogout}
@@ -220,7 +280,7 @@ function Sidebar() {
 
                     borderRadius: 3,
 
-                    color: "#d32f2f",
+                    py: 1.3,
 
                     "&:hover": {
 
@@ -243,6 +303,10 @@ function Sidebar() {
 
                 <ListItemText
                     primary="Logout"
+                    primaryTypographyProps={{
+                        color: "#d32f2f",
+                        fontWeight: 600,
+                    }}
                 />
 
             </ListItemButton>

@@ -6,11 +6,11 @@ import {
     Box,
     Typography,
     Avatar,
-    TextField,
-    InputAdornment,
+    Button,
     IconButton,
     Badge,
-    Button,
+    TextField,
+    InputAdornment,
 } from "@mui/material";
 
 import { AuthContext } from "../../context/AuthContext";
@@ -18,6 +18,7 @@ import { AuthContext } from "../../context/AuthContext";
 import CloudIcon from "@mui/icons-material/Cloud";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 
 function Navbar() {
@@ -25,9 +26,7 @@ function Navbar() {
     const { user } = useContext(AuthContext);
 
     const initials =
-        user?.username
-            ?.substring(0, 1)
-            ?.toUpperCase() || "U";
+        user?.username?.charAt(0)?.toUpperCase() || "U";
 
     return (
 
@@ -36,24 +35,30 @@ function Navbar() {
             elevation={0}
             sx={{
                 bgcolor: "#fff",
-                borderBottom: "1px solid #ECEFF1",
                 color: "#212121",
+                borderBottom: "1px solid #ECEFF1",
+                zIndex: 1201,
             }}
         >
 
             <Toolbar
                 sx={{
+                    height: 72,
+                    px: 4,
+                    display: "flex",
                     justifyContent: "space-between",
-                    py: 1,
                 }}
             >
 
-                {/* Logo */}
+                {/* Left Logo */}
 
                 <Box
                     display="flex"
                     alignItems="center"
                     gap={1.5}
+                    sx={{
+                        minWidth: 220,
+                    }}
                 >
 
                     <CloudIcon
@@ -74,32 +79,51 @@ function Navbar() {
 
                 {/* Search */}
 
-                <TextField
-                    placeholder="Search files and folders..."
-                    size="small"
+                <Box
                     sx={{
-                        width: "40%",
-
-                        "& .MuiOutlinedInput-root": {
-
-                            borderRadius: 8,
-
-                            bgcolor: "#F5F7FA",
-
-                        },
+                        flex: 1,
+                        display: "flex",
+                        justifyContent: "center",
+                        px: 4,
                     }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon
-                                    color="action"
-                                />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                >
 
-                {/* Right Side */}
+                    <TextField
+                        fullWidth
+                        placeholder="Search files and folders..."
+                        size="small"
+                        sx={{
+                            maxWidth: 600,
+
+                            "& .MuiOutlinedInput-root": {
+                                bgcolor: "#F8FAFC",
+                                borderRadius: "999px",
+
+                                "& fieldset": {
+                                    borderColor: "#E2E8F0",
+                                },
+
+                                "&:hover fieldset": {
+                                    borderColor: "#1976d2",
+                                },
+
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "#1976d2",
+                                },
+                            },
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon color="action" />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                </Box>
+
+                {/* Right Section */}
 
                 <Box
                     display="flex"
@@ -109,13 +133,18 @@ function Navbar() {
 
                     <Button
                         variant="contained"
-                        startIcon={
-                            <UploadFileIcon />
-                        }
+                        startIcon={<UploadFileIcon />}
                         sx={{
-                            borderRadius: 3,
                             textTransform: "none",
-                            px: 2.5,
+                            borderRadius: "999px",
+                            px: 3,
+                            py: 1,
+                            fontWeight: 600,
+                            boxShadow: "none",
+
+                            "&:hover": {
+                                boxShadow: "none",
+                            },
                         }}
                     >
                         Upload
@@ -128,27 +157,43 @@ function Navbar() {
                             showZero
                             color="error"
                         >
-
                             <NotificationsNoneIcon />
-
                         </Badge>
 
                     </IconButton>
 
-                    <Avatar
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
                         sx={{
-                            bgcolor: "#1976d2",
-                            fontWeight: 700,
+                            cursor: "pointer",
                         }}
                     >
-                        {initials}
-                    </Avatar>
 
-                    <Typography
-                        fontWeight={600}
-                    >
-                        {user?.username}
-                    </Typography>
+                        <Avatar
+                            sx={{
+                                bgcolor: "#1976d2",
+                                width: 40,
+                                height: 40,
+                                fontWeight: 700,
+                            }}
+                        >
+                            {initials}
+                        </Avatar>
+
+                        <Typography
+                            fontWeight={600}
+                        >
+                            {user?.username}
+                        </Typography>
+
+                        <KeyboardArrowDownIcon
+                            fontSize="small"
+                            color="action"
+                        />
+
+                    </Box>
 
                 </Box>
 
