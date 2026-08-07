@@ -6,22 +6,25 @@ import {
     MenuItem,
 } from "@mui/material";
 
-import SortRoundedIcon from "@mui/icons-material/SortRounded";
+import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 
-function SortMenu({ value, onChange }) {
+function FilterMenu({ value, onChange }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
     const open = Boolean(anchorEl);
 
     const options = [
-        "Newest",
-        "Oldest",
-        "A-Z",
-        "Z-A",
-        "Largest",
-        "Smallest",
+        "All",
+        "Folders",
+        "Files",
+        "Favorites",
+        "Images",
+        "PDF",
+        "Archives",
+        "Videos",
+        "Audio",
     ];
 
     const handleSelect = (option) => {
@@ -33,7 +36,7 @@ function SortMenu({ value, onChange }) {
         <>
             <Button
                 variant="outlined"
-                startIcon={<SortRoundedIcon />}
+                startIcon={<FilterAltRoundedIcon />}
                 endIcon={<KeyboardArrowDownRoundedIcon />}
                 onClick={(e) => setAnchorEl(e.currentTarget)}
                 sx={{
@@ -65,4 +68,4 @@ function SortMenu({ value, onChange }) {
     );
 }
 
-export default SortMenu;
+export default FilterMenu;

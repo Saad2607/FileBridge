@@ -18,6 +18,7 @@ import ActionMenu from "../common/ActionMenu";
 
 function FileCard({
     file,
+    view,
     onOpen,
     onDownload,
     onDelete,
@@ -95,6 +96,125 @@ function FileCard({
     };
 
     const fileIcon = getIcon();
+
+    if (view === "list") {
+
+        return (
+
+            <Card
+                elevation={0}
+                sx={{
+                    borderRadius: 3,
+                    border: "1px solid #E8EDF3",
+                    transition: ".25s",
+
+                    "&:hover": {
+                        boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+                    },
+                }}
+            >
+
+                <CardContent
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        py: 2,
+                    }}
+                >
+
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                        flex={1}
+                        sx={{
+                            cursor: "pointer",
+                        }}
+                        onClick={() => onOpen(file)}
+                    >
+
+                        <Avatar
+                            sx={{
+                                bgcolor: fileIcon.bg,
+                                color: fileIcon.color,
+                            }}
+                        >
+                            {fileIcon.icon}
+                        </Avatar>
+
+                        <Box flex={1}>
+
+                            <Typography fontWeight={700}>
+                                {file.originalName}
+                            </Typography>
+
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                            >
+                                {extension} • {formatFileSize(file.size)}
+                            </Typography>
+
+                        </Box>
+
+                        {file.favorite && (
+
+                            <Chip
+                                icon={<FavoriteRoundedIcon />}
+                                label="Favorite"
+                                color="warning"
+                                size="small"
+                            />
+
+                        )}
+
+                    </Box>
+
+                    <Box
+                        onClick={(e) => e.stopPropagation()}
+                    >
+
+                        <ActionMenu
+                            items={[
+                                {
+                                    label: "Download",
+                                    onClick: () => onDownload(file),
+                                },
+                                {
+                                    label: "Rename",
+                                    onClick: () => onRename(file),
+                                },
+                                {
+                                    label: file.favorite
+                                        ? "Remove Favorite"
+                                        : "Add to Favorites",
+                                    onClick: () => onFavorite(file),
+                                },
+                                {
+                                    label: "Share",
+                                    onClick: () => onShare(file),
+                                },
+                                {
+                                    label: "Properties",
+                                    onClick: () => onProperties(file),
+                                },
+                                {
+                                    label: "Delete",
+                                    onClick: () => onDelete(file),
+                                },
+                            ]}
+                        />
+
+                    </Box>
+
+                </CardContent>
+
+            </Card>
+
+        );
+
+    }
 
     return (
 

@@ -3,6 +3,7 @@ import FileCard from "./FileCard";
 
 function FileGrid({
     files,
+    view,
     onOpen,
     onDownload,
     onDelete,
@@ -22,10 +23,13 @@ function FileGrid({
                 <Grid
                     item
                     xs={12}
+                    md={view === "grid" ? 6 : 12}
+                    lg={view === "grid" ? 4 : 12}
                     key={file._id}
                 >
                     <FileCard
                         file={file}
+                        view={view}
                         onOpen={onOpen}
                         onDownload={onDownload}
                         onDelete={onDelete}

@@ -18,8 +18,8 @@ function SortMenu({ value, onChange }) {
     const options = [
         "Newest",
         "Oldest",
-        "A-Z",
-        "Z-A",
+        "Name (A-Z)",
+        "Name (Z-A)",
         "Largest",
         "Smallest",
     ];

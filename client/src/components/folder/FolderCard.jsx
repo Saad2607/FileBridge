@@ -16,6 +16,7 @@ import ActionMenu from "../common/ActionMenu";
 
 function FolderCard({
     folder,
+    view,
     onOpen,
     onDelete,
     onRename,
@@ -23,38 +24,134 @@ function FolderCard({
     onFavorite,
 }) {
 
+    if (view === "list") {
+
+        return (
+
+            <Card
+                elevation={0}
+                sx={{
+                    borderRadius: 3,
+                    border: "1px solid #E5E7EB",
+                    transition: ".25s",
+                    "&:hover": {
+                        boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+                    },
+                }}
+            >
+
+                <CardContent
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        py: 2,
+                    }}
+                >
+
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                        flex={1}
+                        onClick={() => onOpen(folder)}
+                        sx={{
+                            cursor: "pointer",
+                        }}
+                    >
+
+                        <Avatar
+                            sx={{
+                                bgcolor: "#E8F1FD",
+                            }}
+                        >
+
+                            <FolderIcon
+                                sx={{
+                                    color: "#1976d2",
+                                }}
+                            />
+
+                        </Avatar>
+
+                        <Box flex={1}>
+
+                            <Typography
+                                fontWeight={700}
+                            >
+                                {folder.name}
+                            </Typography>
+
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                            >
+                                Created {new Date(folder.createdAt).toLocaleDateString()}
+                            </Typography>
+
+                        </Box>
+
+                        {folder.favorite && (
+
+                            <Chip
+                                icon={<StarIcon />}
+                                label="Favorite"
+                                color="warning"
+                                size="small"
+                            />
+
+                        )}
+
+                    </Box>
+
+                    <ActionMenu
+                        items={[
+                            {
+                                label: "Rename",
+                                onClick: () => onRename(folder),
+                            },
+                            {
+                                label: folder.favorite
+                                    ? "Remove Favorite"
+                                    : "Add to Favorites",
+                                onClick: () => onFavorite(folder),
+                            },
+                            {
+                                label: "Properties",
+                                onClick: () => onProperties(folder),
+                            },
+                            {
+                                label: "Delete",
+                                onClick: () => onDelete(folder),
+                            },
+                        ]}
+                    />
+
+                </CardContent>
+
+            </Card>
+
+        );
+
+    }
+
     return (
 
         <Card
             elevation={0}
             sx={{
-
-                borderRadius: 5,
-
+                borderRadius: 4,
                 border: "1px solid #E5E7EB",
-
-                bgcolor: "#fff",
-
+                transition: "all .25s ease",
+                cursor: "pointer",
                 overflow: "hidden",
 
-                cursor: "pointer",
-
-                transition: ".25s",
-
                 "&:hover": {
-
-                    transform: "translateY(-8px)",
-
-                    boxShadow: "0 20px 45px rgba(0,0,0,.12)",
-
-                    borderColor: "#1976d2",
-
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 12px 32px rgba(0,0,0,.12)",
                 },
-
             }}
         >
-
-            {/* Top Accent */}
 
             <Box
                 sx={{
@@ -65,8 +162,6 @@ function FolderCard({
             />
 
             <CardContent sx={{ p: 3 }}>
-
-                {/* Header */}
 
                 <Box
                     display="flex"
@@ -83,12 +178,14 @@ function FolderCard({
                             cursor: "pointer",
                         }}
                     >
+
                         <FolderIcon
                             sx={{
                                 fontSize: 38,
                                 color: "#1976d2",
                             }}
                         />
+
                     </Avatar>
 
                     <ActionMenu
@@ -116,12 +213,12 @@ function FolderCard({
 
                 </Box>
 
-                {/* Folder Name */}
-
                 <Box
                     mt={3}
                     onClick={() => onOpen(folder)}
-                    sx={{ cursor: "pointer" }}
+                    sx={{
+                        cursor: "pointer",
+                    }}
                 >
 
                     <Typography
@@ -135,16 +232,12 @@ function FolderCard({
                     <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{
-                            mt: .5,
-                        }}
+                        mt={0.5}
                     >
                         Your Folder
                     </Typography>
 
                 </Box>
-
-                {/* Info */}
 
                 <Box
                     mt={3}
@@ -169,9 +262,7 @@ function FolderCard({
                             variant="body2"
                             color="text.secondary"
                         >
-                            {new Date(
-                                folder.createdAt
-                            ).toLocaleDateString()}
+                            {new Date(folder.createdAt).toLocaleDateString()}
                         </Typography>
 
                     </Box>
@@ -200,8 +291,6 @@ function FolderCard({
 
                 </Box>
 
-                {/* Bottom */}
-
                 <Box
                     mt={3}
                     display="flex"
@@ -215,20 +304,16 @@ function FolderCard({
                         variant="outlined"
                     />
 
-                    {
+                    {folder.favorite && (
 
-                        folder.favorite && (
+                        <Chip
+                            icon={<StarIcon />}
+                            label="Favorite"
+                            color="warning"
+                            size="small"
+                        />
 
-                            <Chip
-                                icon={<StarIcon />}
-                                label="Favorite"
-                                color="warning"
-                                size="small"
-                            />
-
-                        )
-
-                    }
+                    )}
 
                 </Box>
 

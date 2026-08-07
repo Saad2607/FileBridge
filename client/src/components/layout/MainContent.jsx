@@ -44,6 +44,10 @@ import QuickActions from "../dashboard/QuickActions";
 
 import ExplorerToolbar from "../common/ExplorerToolbar";
 
+import FilePreviewDialog from "../file/FilePreviewDialog";
+
+import DashboardStats from "../dashboard/DashboardStats";
+
 function MainContent() {
 
     const {
@@ -97,6 +101,9 @@ function MainContent() {
     const [shareLink, setShareLink] = useState("");
 
     const [selectedShareFile, setSelectedShareFile] = useState(null);
+
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewFile, setPreviewFile] = useState(null);
 
     const [view, setView] = useState("grid");
 
@@ -557,9 +564,211 @@ function MainContent() {
         }
     };
 
-    const displayedFolders = searchQuery.trim() ? searchFolders : folders;
+    const handlePreviewFile = (file) => {
 
-    const displayedFiles = searchQuery.trim() ? searchFiles : files;
+        setPreviewFile(file);
+
+        setPreviewOpen(true);
+
+    };
+
+    const displayedFolders = [...(
+        searchQuery.trim()
+            ? searchFolders
+            : folders
+    )];
+
+    const displayedFiles = [...(
+        searchQuery.trim()
+            ? searchFiles
+            : files
+    )];
+
+    // ---------- SORTING ----------
+
+    const sortByNameAsc = (a, b) =>
+        (a.name || a.originalName).localeCompare(
+            b.name || b.originalName
+        );
+
+    const sortByNameDesc = (a, b) =>
+        (b.name || b.originalName).localeCompare(
+            a.name || a.originalName
+        );
+
+    const sortByNewest = (a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt);
+
+    const sortByOldest = (a, b) =>
+        new Date(a.createdAt) - new Date(b.createdAt);
+
+    const sortByLargest = (a, b) =>
+        (b.size || 0) - (a.size || 0);
+
+    const sortBySmallest = (a, b) =>
+        (a.size || 0) - (b.size || 0);
+
+    switch (sort) {
+
+        case "Name (A-Z)":
+            displayedFolders.sort(sortByNameAsc);
+            displayedFiles.sort(sortByNameAsc);
+            break;
+
+        case "Name (Z-A)":
+            displayedFolders.sort(sortByNameDesc);
+            displayedFiles.sort(sortByNameDesc);
+            break;
+
+        case "Oldest":
+            displayedFolders.sort(sortByOldest);
+            displayedFiles.sort(sortByOldest);
+            break;
+
+        case "Largest":
+            displayedFiles.sort(sortByLargest);
+            break;
+
+        case "Smallest":
+            displayedFiles.sort(sortBySmallest);
+            break;
+
+        default:
+            displayedFolders.sort(sortByNewest);
+            displayedFiles.sort(sortByNewest);
+
+    }
+
+    // ---------- FILTERING ----------
+
+    let filteredFolders = displayedFolders;
+    let filteredFiles = displayedFiles;
+
+    switch (filter) {
+
+        case "Folders":
+            filteredFiles = [];
+            break;
+
+        case "Files":
+            filteredFolders = [];
+            break;
+
+        case "Favorites":
+            filteredFolders = displayedFolders.filter(
+                (folder) => folder.favorite
+            );
+
+            filteredFiles = displayedFiles.filter(
+                (file) => file.favorite
+            );
+            break;
+
+        case "Images":
+            filteredFolders = [];
+
+            filteredFiles = displayedFiles.filter((file) => {
+
+                const ext = file.originalName
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+                return [
+                    "png",
+                    "jpg",
+                    "jpeg",
+                    "gif",
+                    "webp",
+                    "svg",
+                    "bmp"
+                ].includes(ext);
+
+            });
+
+            break;
+
+        case "PDF":
+            filteredFolders = [];
+
+            filteredFiles = displayedFiles.filter(
+                (file) =>
+                    file.originalName
+                        .toLowerCase()
+                        .endsWith(".pdf")
+            );
+
+            break;
+
+        case "Archives":
+            filteredFolders = [];
+
+            filteredFiles = displayedFiles.filter((file) => {
+
+                const ext = file.originalName
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+                return [
+                    "zip",
+                    "rar",
+                    "7z",
+                    "tar",
+                    "gz"
+                ].includes(ext);
+
+            });
+
+            break;
+
+        case "Videos":
+            filteredFolders = [];
+
+            filteredFiles = displayedFiles.filter((file) => {
+
+                const ext = file.originalName
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+                return [
+                    "mp4",
+                    "mkv",
+                    "mov",
+                    "avi",
+                    "webm"
+                ].includes(ext);
+
+            });
+
+            break;
+
+        case "Audio":
+            filteredFolders = [];
+
+            filteredFiles = displayedFiles.filter((file) => {
+
+                const ext = file.originalName
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+                return [
+                    "mp3",
+                    "wav",
+                    "aac",
+                    "ogg",
+                    "flac"
+                ].includes(ext);
+
+            });
+
+            break;
+
+        default:
+            break;
+    }
 
 
     return (
@@ -577,8 +786,8 @@ function MainContent() {
 
                 <ExplorerToolbar
                     totalItems={
-                        displayedFolders.length +
-                        displayedFiles.length
+                        filteredFolders.length +
+                        filteredFiles.length
                     }
                     search={searchQuery}
                     onSearch={setSearchQuery}
@@ -589,6 +798,8 @@ function MainContent() {
                     view={view}
                     onViewChange={setView}
                 />
+
+                <DashboardStats />
 
                 <FolderToolbar>
                     <CreateFolder
@@ -622,8 +833,8 @@ function MainContent() {
                 </Box>
 
                 {
-                    displayedFolders.length === 0 &&
-                    displayedFiles.length === 0 && (
+                    filteredFolders.length === 0 &&
+                    filteredFiles.length === 0 && (
 
                         <EmptyState
                             icon={<FolderOpenIcon fontSize="inherit" />}
@@ -641,7 +852,7 @@ function MainContent() {
 
                             <SectionHeader
                                 title="Folders"
-                                count={displayedFolders.length}
+                                count={filteredFolders.length}
                             />
 
                             <Box
@@ -656,7 +867,7 @@ function MainContent() {
 
                             <SectionHeader
                                 title="Files"
-                                count={displayedFiles.length}
+                                count={filteredFiles.length}
                             />
 
                             <Box
@@ -671,8 +882,8 @@ function MainContent() {
 
                         </>
 
-                    ) : displayedFolders.length === 0 &&
-                        displayedFiles.length === 0 ? (
+                    ) : filteredFolders.length === 0 &&
+                        filteredFiles.length === 0 ? (
 
                         <EmptyState
                             icon={<FolderOpenIcon fontSize="inherit" />}
@@ -686,11 +897,11 @@ function MainContent() {
 
                             <SectionHeader
                                 title="Folders"
-                                count={displayedFolders.length}
+                                count={filteredFolders.length}
                             />
 
                             {
-                                displayedFolders.length === 0 ? (
+                                filteredFolders.length === 0 ? (
 
                                     <EmptyState
                                         icon={<FolderOpenIcon fontSize="inherit" />}
@@ -701,7 +912,8 @@ function MainContent() {
                                 ) : (
 
                                     <FolderGrid
-                                        folders={displayedFolders}
+                                        folders={filteredFolders}
+                                        view={view}
                                         onOpen={handleOpenFolder}
                                         onDelete={handleDeleteFolder}
                                         onRename={handleRenameFolder}
@@ -714,11 +926,11 @@ function MainContent() {
 
                             <SectionHeader
                                 title="Files"
-                                count={displayedFiles.length}
+                                count={filteredFiles.length}
                             />
 
                             {
-                                displayedFiles.length === 0 ? (
+                                filteredFiles.length === 0 ? (
 
                                     <EmptyState
                                         icon={<FolderOpenIcon fontSize="inherit" />}
@@ -729,7 +941,9 @@ function MainContent() {
                                 ) : (
 
                                     <FileGrid
-                                        files={displayedFiles}
+                                        files={filteredFiles}
+                                        view={view}
+                                        onOpen={handlePreviewFile}
                                         onDownload={handleDownload}
                                         onDelete={handleDeleteFile}
                                         onRename={handleRenameFile}
@@ -818,6 +1032,18 @@ function MainContent() {
                     title={propertiesTitle}
                     properties={properties}
                     onClose={() => setPropertiesOpen(false)}
+                />
+
+                <FilePreviewDialog
+                    open={previewOpen}
+                    file={previewFile}
+                    onClose={() => {
+
+                        setPreviewOpen(false);
+
+                        setPreviewFile(null);
+
+                    }}
                 />
 
                 <ShareDialog

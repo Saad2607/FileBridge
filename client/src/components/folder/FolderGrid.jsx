@@ -3,6 +3,7 @@ import FolderCard from "./FolderCard";
 
 function FolderGrid({
     folders,
+    view,
     onOpen,
     onDelete,
     onRename,
@@ -16,54 +17,31 @@ function FolderGrid({
 
     return (
 
-        <Grid
-            container
-            spacing={3}
-        >
+        <Grid container spacing={2}>
 
-            {
+            {folders.map((folder) => (
 
-                folders.map((folder, index) => (
+                <Grid
+                    item
+                    xs={12}
+                    md={view === "grid" ? 6 : 12}
+                    lg={view === "grid" ? 4 : 12}
+                    key={folder._id}
+                >
 
-                    <Grid
-                        item
-                        xs={12}
-                        sm={6}
-                        md={6}
-                        lg={4}
-                        xl={3}
-                        key={folder._id}
-                    >
+                    <FolderCard
+                        folder={folder}
+                        view={view}
+                        onOpen={onOpen}
+                        onDelete={onDelete}
+                        onRename={onRename}
+                        onProperties={onProperties}
+                        onFavorite={onFavorite}
+                    />
 
-                        <Fade
-                            in
-                            timeout={300 + index * 100}
-                        >
+                </Grid>
 
-                            <div
-                                style={{
-                                    height: "100%",
-                                }}
-                            >
-
-                                <FolderCard
-                                    folder={folder}
-                                    onOpen={onOpen}
-                                    onDelete={onDelete}
-                                    onRename={onRename}
-                                    onProperties={onProperties}
-                                    onFavorite={onFavorite}
-                                />
-
-                            </div>
-
-                        </Fade>
-
-                    </Grid>
-
-                ))
-
-            }
+            ))}
 
         </Grid>
 
