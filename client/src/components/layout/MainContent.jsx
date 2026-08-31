@@ -157,7 +157,9 @@ function MainContent() {
             setFiles(fileData.files || []);
         } catch (error) {
             console.error(error);
-            toast.error("Unable to load contents.");
+            if (error.response?.status !== 401) {
+                toast.error("Unable to load contents.");
+            }
         } finally {
             setLoading(false);
         }

@@ -46,7 +46,9 @@ function SharedFiles() {
             setFiles(data.files || []);
         } catch (error) {
             console.error(error);
-            toast.error("Unable to load shared files.");
+            if (error.response?.status !== 401) {
+                toast.error("Unable to load shared files.");
+            }
         } finally {
             setLoading(false);
         }

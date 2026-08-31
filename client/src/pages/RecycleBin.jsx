@@ -49,7 +49,9 @@ function RecycleBin() {
             setFiles(fileData.files || []);
         } catch (error) {
             console.error(error);
-            toast.error("Unable to load recycle bin.");
+            if (error.response?.status !== 401) {
+                toast.error("Unable to load recycle bin.");
+            }
         } finally {
             setLoading(false);
         }
