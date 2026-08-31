@@ -87,8 +87,13 @@ export const formatFileSize = (bytes) => {
 export const getFileUrl = (file) => {
     if (!file) return "";
     if (file.url) return file.url;
-    const apiUrl = import.meta.env.VITE_API_URL || "";
-    const baseUrl = import.meta.env.VITE_SERVER_URL || (apiUrl ? apiUrl.replace(/\/api\/?$/, "") : "http://localhost:5000");
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const cleanApiUrl = apiUrl.replace(/\/$/, "");
+    const baseUrl = import.meta.env.VITE_SERVER_URL || cleanApiUrl.replace(/\/api\/?$/, "");
+
+    if (file._id || file.id) {
+        return `${cleanApiUrl}/files/preview/${file._id || file.id}`;
+    }
     if (file.storedName) {
         return `${baseUrl}/uploads/files/${file.storedName}`;
     }

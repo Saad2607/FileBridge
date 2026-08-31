@@ -12,12 +12,36 @@ const shareRoutes = require("./routes/shareRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 
+const path = require("path");
+const fs = require("fs");
+
 const app = express();
 
-app.use(cors());
+// Ensure upload directory exists
+const uploadDir = path.join(__dirname, "uploads/files");
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+app.use(cors({
+    origin: true,
+    credentials: true,
+}));
 app.use(express.json());
 
-app.use("/uploads", express.static("uploads"));
+// Serve static uploads with Cross-Origin Resource Policy and CORS headers
+app.use(
+    "/uploads",
+    (req, res, next) => {
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+        next();
+    },
+    express.static(path.join(__dirname, "uploads")),
+    express.static(path.resolve("uploads")),
+    express.static(path.join(__dirname, "../uploads"))
+);
 
 app.get("/", (req, res) => {
     res.send("Welcome to FileBridge API 🚀");

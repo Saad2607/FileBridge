@@ -1,5 +1,6 @@
 const File = require("../models/File");
 const path = require("path");
+const fs = require("fs");
 const { logUserActivity } = require("../utils/activityLogger");
 
 const uploadFile = async (req, res) => {
@@ -264,4 +265,52 @@ const toggleFavoriteFile = async (req, res) => {
     }
 };
 
-module.exports = { uploadFile, getFiles, downloadFile, deleteFile, renameFile, toggleFavoriteFile };
+const previewFile = async (req, res) => {
+    try {
+        const file = await File.findOne({
+            _id: req.params.id,
+            isDeleted: false,
+        });
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        if (file.mimeType) {
+            res.setHeader("Content-Type", file.mimeType);
+        }
+
+        const candidatePaths = [
+            file.path ? path.resolve(file.path) : null,
+            file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
+            file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("uploads", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../../uploads/files", file.storedName) : null,
+        ].filter(Boolean);
+
+        for (const p of candidatePaths) {
+            if (fs.existsSync(p)) {
+                return res.sendFile(p);
+            }
+        }
+
+        return res.status(404).json({
+            success: false,
+            message: "File asset not found on storage disk.",
+        });
+    } catch (error) {
+        console.error("Preview error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to serve file preview.",
+        });
+    }
+};
+
+module.exports = { uploadFile, getFiles, downloadFile, deleteFile, renameFile, toggleFavoriteFile, previewFile };
