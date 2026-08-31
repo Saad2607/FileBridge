@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Build outputs & installers
+dist/
+build/
+client/dist/
+desktop/dist/
+*.exe
+*.blockmap
+
+# Uploads
+uploads/
+server/uploads/files/*
+!server/uploads/files/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
