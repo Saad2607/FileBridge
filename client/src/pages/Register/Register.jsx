@@ -15,7 +15,9 @@ import {
     Link as MuiLink,
 } from "@mui/material";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
-import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
+import AlternateEmailRoundedIcon from "@mui/icons-material/AlternateEmailRounded";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -26,13 +28,15 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 
-import { login } from "../../services/authService";
+import { register } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
 import { saveToken, saveUser, getToken } from "../../utils/storage";
 import { ROUTES } from "../../constants/routes";
 
-function Login() {
+function Register() {
+    const [name, setName] = useState("");
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -40,23 +44,38 @@ function Login() {
     const { token, setToken, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Prevent authenticated users from visiting the login page
+    // Prevent authenticated users from visiting the register page
     useEffect(() => {
         if (token || getToken()) {
             navigate(ROUTES.DASHBOARD, { replace: true });
         }
     }, [token, navigate]);
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         if (e) e.preventDefault();
-        if (!username.trim() || !password) {
-            toast.error("Please enter both username and password.");
+        if (!name.trim() || !username.trim() || !email.trim() || !password) {
+            toast.error("Please fill in all fields.");
+            return;
+        }
+
+        if (username.trim().length < 3) {
+            toast.error("Username must be at least 3 characters.");
+            return;
+        }
+
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters.");
             return;
         }
 
         try {
             setLoading(true);
-            const data = await login(username.trim(), password);
+            const data = await register(
+                name.trim(),
+                username.trim(),
+                email.trim(),
+                password
+            );
 
             saveToken(data.token);
             saveUser(data.user);
@@ -64,10 +83,10 @@ function Login() {
             setToken(data.token);
             setUser(data.user);
 
-            toast.success(`Welcome back, ${data.user.name || data.user.username}!`);
+            toast.success(`Account created! Welcome, ${data.user.name || data.user.username}!`);
             navigate(ROUTES.DASHBOARD, { replace: true });
         } catch (error) {
-            const message = error.response?.data?.message || "Invalid credentials. Please try again.";
+            const message = error.response?.data?.message || "Registration failed. Please try again.";
             toast.error(message);
         } finally {
             setLoading(false);
@@ -120,7 +139,7 @@ function Login() {
                 justifyContent="center"
                 sx={{ maxWidth: 1080, position: "relative", zIndex: 1 }}
             >
-                {/* Left Side: Product Showcase (Hidden on Mobile) */}
+                {/* Left Side: Product Showcase */}
                 <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: "none", md: "block" } }}>
                     <Box pr={2}>
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.5, mb: 2 }}>
@@ -154,14 +173,14 @@ function Login() {
                             mb={2}
                             sx={{ color: "#FFFFFF !important", textShadow: "0 2px 10px rgba(0,0,0,0.3)" }}
                         >
-                            Personal cloud &amp; desktop file management, perfected.
+                            Create your personal cloud workspace today.
                         </Typography>
 
                         <Typography
                             variant="body1"
                             sx={{ color: "#94A3B8 !important", mb: 4, lineHeight: 1.6, fontSize: "0.95rem" }}
                         >
-                            Store, synchronize, share, and preview all your digital assets seamlessly across web browsers and your desktop environment.
+                            Get unlimited file management, automatic desktop folder synchronization, universal previewing, and secure link sharing.
                         </Typography>
 
                         {/* Feature Highlights */}
@@ -211,13 +230,13 @@ function Login() {
                     </Box>
                 </Grid>
 
-                {/* Right Side: Login Card */}
+                {/* Right Side: Register Card */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card
                         elevation={0}
                         sx={{
                             width: "100%",
-                            maxWidth: 420,
+                            maxWidth: 440,
                             mx: "auto",
                             borderRadius: "18px",
                             bgcolor: "#FFFFFF",
@@ -235,7 +254,7 @@ function Login() {
                         />
 
                         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
-                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 3 }}>
+                            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2.5 }}>
                                 <Avatar
                                     src="/favicon.svg"
                                     sx={{
@@ -251,37 +270,84 @@ function Login() {
                                 </Avatar>
 
                                 <Typography variant="h6" fontWeight={800} color="#0F172A" letterSpacing="-0.02em">
-                                    Sign In to FileBridge
+                                    Create FileBridge Account
                                 </Typography>
 
                                 <Typography variant="caption" color="text.secondary" mt={0.25}>
-                                    Enter your credentials to access your cloud files
+                                    Sign up to start organizing and synchronizing your files
                                 </Typography>
                             </Box>
 
-                            <Box component="form" onSubmit={handleLogin} noValidate>
-                                <Box mb={2}>
+                            <Box component="form" onSubmit={handleRegister} noValidate>
+                                {/* Full Name */}
+                                <Box mb={1.75}>
                                     <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
-                                        USERNAME OR EMAIL
+                                        FULL NAME
                                     </Typography>
                                     <TextField
                                         fullWidth
                                         size="small"
-                                        placeholder="Enter your username or email"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="e.g. Mohammed Saad"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                         disabled={loading}
                                         autoFocus
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    <PersonOutlineRoundedIcon sx={{ fontSize: 18, color: "#94A3B8" }} />
+                                                    <BadgeRoundedIcon sx={{ fontSize: 18, color: "#94A3B8" }} />
                                                 </InputAdornment>
                                             ),
                                         }}
                                     />
                                 </Box>
 
+                                {/* Username */}
+                                <Box mb={1.75}>
+                                    <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
+                                        USERNAME
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        placeholder="Choose a unique username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        disabled={loading}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <AlternateEmailRoundedIcon sx={{ fontSize: 18, color: "#94A3B8" }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* Email */}
+                                <Box mb={1.75}>
+                                    <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
+                                        EMAIL ADDRESS
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        type="email"
+                                        placeholder="you@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        disabled={loading}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <EmailOutlinedIcon sx={{ fontSize: 18, color: "#94A3B8" }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* Password */}
                                 <Box mb={3.5}>
                                     <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
                                         PASSWORD
@@ -290,7 +356,7 @@ function Login() {
                                         fullWidth
                                         size="small"
                                         type={showPassword ? "text" : "password"}
-                                        placeholder="••••••••"
+                                        placeholder="At least 6 characters"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         disabled={loading}
@@ -328,7 +394,7 @@ function Login() {
                                     fullWidth
                                     type="submit"
                                     variant="contained"
-                                    disabled={loading || !username.trim() || !password}
+                                    disabled={loading || !name.trim() || !username.trim() || !email.trim() || !password}
                                     endIcon={!loading && <ArrowForwardRoundedIcon sx={{ fontSize: 18 }} />}
                                     sx={{
                                         py: 1.3,
@@ -344,17 +410,17 @@ function Login() {
                                         },
                                     }}
                                 >
-                                    {loading ? <CircularProgress size={20} color="inherit" /> : "Sign In"}
+                                    {loading ? <CircularProgress size={20} color="inherit" /> : "Create Account"}
                                 </Button>
                             </Box>
 
-                            {/* Create Account Link */}
+                            {/* Sign In Link */}
                             <Box textAlign="center" mt={2.5}>
                                 <Typography variant="body2" color="text.secondary" fontSize="0.85rem">
-                                    Don't have an account?{" "}
+                                    Already have an account?{" "}
                                     <MuiLink
                                         component={Link}
-                                        to={ROUTES.REGISTER}
+                                        to={ROUTES.LOGIN}
                                         sx={{
                                             color: "#4F46E5",
                                             fontWeight: 700,
@@ -362,7 +428,7 @@ function Login() {
                                             "&:hover": { textDecoration: "underline" },
                                         }}
                                     >
-                                        Create Account
+                                        Sign In
                                     </MuiLink>
                                 </Typography>
                             </Box>
@@ -390,4 +456,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Register;

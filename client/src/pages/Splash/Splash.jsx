@@ -12,9 +12,9 @@ function Splash() {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (getToken()) {
-                navigate(ROUTES.DASHBOARD);
+                navigate(ROUTES.DASHBOARD, { replace: true });
             } else {
-                navigate(ROUTES.LOGIN);
+                navigate(ROUTES.LOGIN, { replace: true });
             }
         }, 900);
 

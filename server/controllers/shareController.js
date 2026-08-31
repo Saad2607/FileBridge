@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
+const path = require("path");
 
 const File = require("../models/File");
 const { logUserActivity } = require("../utils/activityLogger");
@@ -158,8 +159,10 @@ const getSharedFile = async (req, res) => {
             }
         }
 
+        const filePath = path.resolve(file.path);
+
         res.download(
-            file.path,
+            filePath,
             file.originalName
         );
 

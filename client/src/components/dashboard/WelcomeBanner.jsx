@@ -28,7 +28,7 @@ function WelcomeBanner() {
                 <Box display="flex" alignItems="center" gap={1.25} mb={0.5}>
                     <WavingHandRoundedIcon sx={{ color: "#FBBF24", fontSize: 28 }} />
                     <Typography variant="h5" fontWeight={800} color="#FFFFFF" letterSpacing="-0.3px">
-                        Welcome back, {user?.username || "Explorer"}!
+                        Welcome back, {user?.name || user?.username || "Explorer"}!
                     </Typography>
                 </Box>
 

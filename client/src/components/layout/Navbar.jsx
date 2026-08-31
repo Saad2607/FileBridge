@@ -191,22 +191,55 @@ function Navbar({ title = "My Files" }) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                     PaperProps={{
-                        elevation: 6,
+                        elevation: 8,
                         sx: {
-                            mt: 1,
-                            minWidth: 200,
-                            borderRadius: "12px",
+                            mt: 1.25,
+                            minWidth: 230,
+                            borderRadius: "14px",
                             border: "1px solid #E2E8F0",
-                            p: 0.5,
+                            boxShadow: "0 12px 28px -4px rgba(15, 23, 42, 0.12), 0 8px 12px -6px rgba(15, 23, 42, 0.08)",
+                            overflow: "hidden",
+                            p: 0,
                         },
                     }}
+                    MenuListProps={{
+                        sx: { p: 1 },
+                    }}
                 >
-                    <Box px={1.5} py={0.75}>
-                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A" fontSize="0.85rem">
-                            {user?.username}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" fontSize="0.72rem">
-                            {isElectron ? "Desktop Companion Active" : "Personal Cloud Plan"}
+                    <Box
+                        sx={{
+                            px: 1.5,
+                            py: 1.25,
+                            mb: 0.75,
+                            bgcolor: "#F8FAFC",
+                            borderRadius: "10px",
+                            border: "1px solid #E2E8F0",
+                        }}
+                    >
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 0.5 }}>
+                            <Avatar
+                                sx={{
+                                    bgcolor: "#4F46E5",
+                                    width: 32,
+                                    height: 32,
+                                    fontSize: "0.82rem",
+                                    fontWeight: 800,
+                                    boxShadow: "0 2px 8px rgba(79, 70, 229, 0.25)",
+                                }}
+                            >
+                                {initials}
+                            </Avatar>
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Typography variant="subtitle2" fontWeight={800} color="#0F172A" fontSize="0.88rem" noWrap>
+                                    {user?.name || user?.username || "saad"}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary" fontSize="0.72rem" display="block" noWrap>
+                                    @{user?.username || "saad"}
+                                </Typography>
+                            </Box>
+                        </Box>
+                        <Typography variant="caption" sx={{ color: "#64748B", fontSize: "0.72rem", fontWeight: 600, display: "block", mt: 0.25 }}>
+                            {isElectron ? "⚡ Desktop Companion Active" : "☁️ Personal Cloud Plan"}
                         </Typography>
                     </Box>
 
@@ -219,8 +252,9 @@ function Navbar({ title = "My Files" }) {
                         }}
                         sx={{
                             borderRadius: "8px",
-                            py: 0.75,
-                            "&:hover": { bgcolor: "#F8FAFC" },
+                            py: 0.85,
+                            px: 1.5,
+                            "&:hover": { bgcolor: "#F1F5F9" },
                         }}
                     >
                         <ListItemIcon sx={{ minWidth: 28, color: "#64748B" }}>
@@ -228,7 +262,7 @@ function Navbar({ title = "My Files" }) {
                         </ListItemIcon>
                         <ListItemText
                             primary="Settings"
-                            primaryTypographyProps={{ fontWeight: 600, fontSize: "0.82rem" }}
+                            primaryTypographyProps={{ fontWeight: 600, fontSize: "0.84rem", color: "#334155" }}
                         />
                     </MenuItem>
 
@@ -236,7 +270,8 @@ function Navbar({ title = "My Files" }) {
                         onClick={handleLogout}
                         sx={{
                             borderRadius: "8px",
-                            py: 0.75,
+                            py: 0.85,
+                            px: 1.5,
                             color: "#EF4444",
                             "&:hover": { bgcolor: "#FEF2F2" },
                         }}
@@ -246,7 +281,7 @@ function Navbar({ title = "My Files" }) {
                         </ListItemIcon>
                         <ListItemText
                             primary="Sign Out"
-                            primaryTypographyProps={{ fontWeight: 600, fontSize: "0.82rem" }}
+                            primaryTypographyProps={{ fontWeight: 600, fontSize: "0.84rem" }}
                         />
                     </MenuItem>
                 </Menu>

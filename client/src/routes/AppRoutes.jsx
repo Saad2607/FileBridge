@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Splash from "../pages/Splash/Splash";
 import Favorites from "../pages/Favorites";
@@ -19,6 +20,7 @@ function AppRoutes() {
         <Routes>
             <Route path={ROUTES.SPLASH} element={<Splash />} />
             <Route path={ROUTES.LOGIN} element={<Login />} />
+            <Route path={ROUTES.REGISTER} element={<Register />} />
             <Route path={ROUTES.SHARE} element={<SharePage />} />
 
             <Route

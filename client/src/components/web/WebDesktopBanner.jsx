@@ -17,6 +17,11 @@ import SyncRoundedIcon from "@mui/icons-material/SyncRounded";
 import SpeedRoundedIcon from "@mui/icons-material/SpeedRounded";
 import NotificationsActiveRoundedIcon from "@mui/icons-material/NotificationsActiveRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+
+const GITHUB_RELEASE_DOWNLOAD_URL = "https://github.com/Saad2607/FileBridge/releases/latest/download/FileBridge.Setup.1.0.0.exe";
+const GITHUB_RELEASES_PAGE_URL = "https://github.com/Saad2607/FileBridge/releases";
 
 function WebDesktopBanner() {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,7 +71,7 @@ function WebDesktopBanner() {
                                 FileBridge Desktop Companion
                             </Typography>
                             <Chip
-                                label="NEW"
+                                label="v1.0.0 Ready"
                                 size="small"
                                 sx={{
                                     height: 18,
@@ -88,6 +93,7 @@ function WebDesktopBanner() {
                     <Button
                         size="small"
                         variant="contained"
+                        startIcon={<DownloadRoundedIcon />}
                         onClick={() => setDialogOpen(true)}
                         sx={{
                             bgcolor: "#38BDF8",
@@ -100,7 +106,7 @@ function WebDesktopBanner() {
                             },
                         }}
                     >
-                        Explore Desktop App
+                        Download Desktop App
                     </Button>
 
                     <IconButton
@@ -146,7 +152,7 @@ function WebDesktopBanner() {
 
                 <DialogContent sx={{ p: 3, bgcolor: "#F8FAFC" }}>
                     <Typography variant="body2" color="text.secondary" mb={3}>
-                        Install the FileBridge Electron companion to unlock bi-directional background synchronization directly with your local PC folders.
+                        Install the official FileBridge desktop companion to unlock bi-directional background synchronization directly with your local PC folders.
                     </Typography>
 
                     <Grid container spacing={2}>
@@ -201,16 +207,34 @@ function WebDesktopBanner() {
                 </DialogContent>
 
                 <DialogActions sx={{ p: 2.5, px: 3, justifyContent: "space-between", bgcolor: "#FFFFFF" }}>
-                    <Typography variant="caption" color="text.secondary">
-                        Run <code style={{ fontWeight: 700, color: "#1976D2" }}>cd desktop &amp;&amp; npm start</code> to launch
-                    </Typography>
+                    <Button
+                        variant="outlined"
+                        href={GITHUB_RELEASES_PAGE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        endIcon={<OpenInNewRoundedIcon sx={{ fontSize: 16 }} />}
+                        sx={{ borderRadius: 2.5, fontWeight: 600, color: "#64748B", borderColor: "#CBD5E1" }}
+                    >
+                        View Releases
+                    </Button>
 
                     <Button
                         variant="contained"
-                        onClick={() => setDialogOpen(false)}
-                        sx={{ borderRadius: 2.5, fontWeight: 700 }}
+                        href={GITHUB_RELEASE_DOWNLOAD_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        startIcon={<DownloadRoundedIcon />}
+                        sx={{
+                            borderRadius: 2.5,
+                            fontWeight: 700,
+                            background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
+                            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.3)",
+                            "&:hover": {
+                                background: "linear-gradient(135deg, #4338CA 0%, #0369A1 100%)",
+                            },
+                        }}
                     >
-                        Got It
+                        Download Installer (.exe)
                     </Button>
                 </DialogActions>
             </Dialog>

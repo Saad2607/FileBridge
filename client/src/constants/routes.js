@@ -1,6 +1,7 @@
 export const ROUTES = {
     SPLASH: "/",
     LOGIN: "/login",
+    REGISTER: "/register",
     DASHBOARD: "/dashboard",
     FAVORITES: "/favorites",
     RECYCLE_BIN: "/recycle-bin",

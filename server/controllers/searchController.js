@@ -16,12 +16,13 @@ const search = async (req, res) => {
         }
 
 
-        const regex = new RegExp(query, "i");
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(escapedQuery, "i");
 
         const folders = await Folder.find({
             owner: req.user.id,
             name: regex,
-            isDeleted: false
+            isDeleted: false,
         });
 
         const files = await File.find({

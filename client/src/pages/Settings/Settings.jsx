@@ -128,9 +128,12 @@ function Settings() {
 
                                 <Box>
                                     <Typography variant="subtitle1" fontWeight={800} color="#0F172A">
-                                        {user?.username}
+                                        {user?.name || user?.username}
                                     </Typography>
-                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 1, mt: 0.5 }}>
+                                    <Typography variant="caption" color="text.secondary" display="block">
+                                        @{user?.username}
+                                    </Typography>
+                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 1, mt: 0.75 }}>
                                         <Chip label="Personal Plan" size="small" variant="outlined" sx={{ fontWeight: 600, height: 22, fontSize: "0.72rem" }} />
                                         <Chip label="Free 5 GB" size="small" color="primary" sx={{ fontWeight: 700, height: 22, fontSize: "0.72rem" }} />
                                     </Box>
@@ -140,10 +143,22 @@ function Settings() {
                             <Divider sx={{ my: 2 }} />
 
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+                                {user?.name && (
+                                    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>Full Name</Typography>
+                                        <Typography variant="body2" fontWeight={700}>{user.name}</Typography>
+                                    </Box>
+                                )}
                                 <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                     <Typography variant="caption" color="text.secondary" fontWeight={600}>Username</Typography>
-                                    <Typography variant="body2" fontWeight={700}>{user?.username}</Typography>
+                                    <Typography variant="body2" fontWeight={700}>@{user?.username}</Typography>
                                 </Box>
+                                {user?.email && (
+                                    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+                                        <Typography variant="caption" color="text.secondary" fontWeight={600}>Email Address</Typography>
+                                        <Typography variant="body2" fontWeight={700}>{user.email}</Typography>
+                                    </Box>
+                                )}
                                 <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
                                     <Typography variant="caption" color="text.secondary" fontWeight={600}>Status</Typography>
                                     <Typography variant="body2" fontWeight={700} color="success.main">Active Account</Typography>
@@ -298,12 +313,20 @@ function Settings() {
                                     </Box>
 
                                     <Button
-                                        variant="outlined"
+                                        variant="contained"
+                                        href="https://github.com/Saad2607/FileBridge/releases/latest/download/FileBridge.Setup.1.0.0.exe"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         startIcon={<LaptopMacRoundedIcon />}
-                                        onClick={() => toast("Run 'cd desktop && npm start' in terminal to launch companion.", { icon: "💻" })}
-                                        sx={{ borderRadius: "8px", fontWeight: 700, whiteSpace: "nowrap" }}
+                                        sx={{
+                                            borderRadius: "8px",
+                                            fontWeight: 700,
+                                            whiteSpace: "nowrap",
+                                            background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
+                                            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
+                                        }}
                                     >
-                                        Launch Desktop App
+                                        Download Desktop App (.exe)
                                     </Button>
                                 </Box>
                             )}
