@@ -58,11 +58,11 @@ function SharedFiles() {
         <Box
             sx={{
                 width: "100%",
-                height: "100%",
-                overflowY: "auto",
-                overflowX: "hidden",
+                maxWidth: 1400,
+                mx: "auto",
                 boxSizing: "border-box",
                 p: { xs: 1.5, sm: 2.5, md: 4 },
+                pb: { xs: 10, sm: 8, md: 6 },
             }}
         >
             <Box mb={3.5}>

@@ -537,7 +537,17 @@ function MainContent() {
 
     return (
         <DragDropZone onDrop={handleDropUpload}>
-            <Box sx={{ flex: 1, p: { xs: 1.5, sm: 2.5, md: 4 }, maxWidth: 1400, mx: "auto" }}>
+            <Box
+                sx={{
+                    flex: 1,
+                    p: { xs: 1.5, sm: 2.5, md: 4 },
+                    pb: { xs: 10, sm: 8, md: 6 },
+                    maxWidth: 1400,
+                    mx: "auto",
+                    width: "100%",
+                    boxSizing: "border-box",
+                }}
+            >
                 {/* Platform-Specific Companion Banner */}
                 {isElectron ? <DesktopSyncHub /> : <WebDesktopBanner />}
 
@@ -654,11 +664,13 @@ function MainContent() {
                         display: "grid",
                         gridTemplateColumns: {
                             xs: "1fr",
-                            lg: "2fr 1fr",
+                            md: "1fr",
+                            lg: "1.8fr 1.2fr",
                         },
                         gap: 3,
-                        mt: 6,
+                        mt: { xs: 4, sm: 5, md: 6 },
                         pt: 4,
+                        mb: 2,
                         borderTop: "1px solid #E2E8F0",
                     }}
                 >

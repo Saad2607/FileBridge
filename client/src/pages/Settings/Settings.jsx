@@ -89,7 +89,16 @@ function Settings() {
     const freeBytes = Math.max(0, TOTAL_QUOTA - storageUsed);
 
     return (
-        <Box sx={{ p: { xs: 1.5, sm: 2.5, md: 4 }, maxWidth: 1000, mx: "auto" }}>
+        <Box
+            sx={{
+                p: { xs: 1.5, sm: 2.5, md: 4 },
+                pb: { xs: 10, sm: 8, md: 6 },
+                maxWidth: 1000,
+                mx: "auto",
+                width: "100%",
+                boxSizing: "border-box",
+            }}
+        >
             <Box mb={3.5}>
                 <Typography variant="h4" fontWeight={800} color="#0F172A" letterSpacing="-0.03em" sx={{ fontSize: { xs: "1.45rem", sm: "2rem" } }}>
                     Settings

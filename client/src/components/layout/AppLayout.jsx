@@ -54,7 +54,8 @@ function AppLayout() {
             sx={{
                 display: "flex",
                 flexDirection: "column",
-                height: "100vh",
+                height: "100dvh",
+                minHeight: "100dvh",
                 overflow: "hidden",
                 bgcolor: "#F8FAFC",
             }}
@@ -68,6 +69,7 @@ function AppLayout() {
                     display: "flex",
                     flex: 1,
                     overflow: "hidden",
+                    minHeight: 0,
                 }}
             >
                 <Sidebar
@@ -83,6 +85,7 @@ function AppLayout() {
                         height: "100%",
                         overflow: "hidden",
                         minWidth: 0,
+                        minHeight: 0,
                     }}
                 >
                     <Navbar
@@ -91,10 +94,13 @@ function AppLayout() {
                     />
 
                     <Box
+                        component="main"
                         sx={{
                             flex: 1,
                             overflowY: "auto",
                             overflowX: "hidden",
+                            minHeight: 0,
+                            WebkitOverflowScrolling: "touch",
                         }}
                     >
                         <Outlet />
