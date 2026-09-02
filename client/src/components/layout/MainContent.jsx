@@ -537,7 +537,7 @@ function MainContent() {
 
     return (
         <DragDropZone onDrop={handleDropUpload}>
-            <Box sx={{ flex: 1, p: { xs: 2.5, md: 4 }, maxWidth: 1400, mx: "auto" }}>
+            <Box sx={{ flex: 1, p: { xs: 1.5, sm: 2.5, md: 4 }, maxWidth: 1400, mx: "auto" }}>
                 {/* Platform-Specific Companion Banner */}
                 {isElectron ? <DesktopSyncHub /> : <WebDesktopBanner />}
 
@@ -547,14 +547,14 @@ function MainContent() {
                         display: "flex",
                         flexDirection: { xs: "column", sm: "row" },
                         justifyContent: "space-between",
-                        alignItems: { xs: "flex-start", sm: "center" },
-                        gap: 2,
-                        mb: 3,
+                        alignItems: { xs: "stretch", sm: "center" },
+                        gap: 1.5,
+                        mb: 2.5,
                     }}
                 >
                     <Breadcrumb />
 
-                    <Stack direction="row" spacing={1.5}>
+                    <Stack direction="row" spacing={1.5} sx={{ alignSelf: { xs: "stretch", sm: "auto" } }}>
                         <CreateFolder onCreate={handleCreateFolder} />
                         <FileUpload onSelect={handleUpload} />
                     </Stack>
@@ -579,8 +579,8 @@ function MainContent() {
                         <SectionHeader title="Folders" count={filteredFolders.length} />
                         <Box
                             display="grid"
-                            gridTemplateColumns="repeat(auto-fill, minmax(260px, 1fr))"
-                            gap={2.5}
+                            gridTemplateColumns={{ xs: "repeat(2, 1fr)", sm: "repeat(auto-fill, minmax(260px, 1fr))" }}
+                            gap={{ xs: 1.5, sm: 2.5 }}
                             mb={4}
                         >
                             {[...Array(4)].map((_, index) => (

@@ -59,8 +59,8 @@ function DashboardOverview() {
                 <StorageCard storageUsed={stats.storageUsed} />
             </Box>
 
-            <Grid container spacing={2.5} sx={{ mb: 4 }}>
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+            <Grid container spacing={{ xs: 1.5, sm: 2.5 }} sx={{ mb: 4 }}>
+                <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
                     <StatsCard
                         title="Folders"
                         value={stats.folders}
@@ -69,7 +69,7 @@ function DashboardOverview() {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+                <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
                     <StatsCard
                         title="Files"
                         value={stats.files}
@@ -78,7 +78,7 @@ function DashboardOverview() {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+                <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
                     <StatsCard
                         title="Favorites"
                         value={stats.favorites}
@@ -87,7 +87,7 @@ function DashboardOverview() {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }}>
+                <Grid size={{ xs: 6, sm: 6, md: 4, lg: 2.4 }}>
                     <StatsCard
                         title="Shared"
                         value={stats.shared}

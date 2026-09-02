@@ -62,14 +62,14 @@ function SharedFiles() {
                 overflowY: "auto",
                 overflowX: "hidden",
                 boxSizing: "border-box",
-                p: { xs: 2.5, md: 4 },
+                p: { xs: 1.5, sm: 2.5, md: 4 },
             }}
         >
-            <Box mb={4}>
-                <Typography variant="h4" fontWeight={800} color="#0F172A">
+            <Box mb={3.5}>
+                <Typography variant="h4" fontWeight={800} color="#0F172A" sx={{ fontSize: { xs: "1.45rem", sm: "2rem" } }}>
                     Shared Files
                 </Typography>
-                <Typography variant="body1" color="text.secondary" mt={0.5}>
+                <Typography variant="body2" color="text.secondary" mt={0.5}>
                     Manage all active public links and passwords for shared files.
                 </Typography>
             </Box>

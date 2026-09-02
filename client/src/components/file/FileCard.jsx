@@ -273,10 +273,10 @@ function FileCard({
                 },
             }}
         >
-            <CardContent sx={{ p: 2 }}>
+            <CardContent sx={{ p: { xs: 1.25, sm: 2 }, "&:last-child": { pb: { xs: 1.25, sm: 2 } } }}>
                 {/* Header: Checkbox / Icon / Quick Actions */}
-                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25 }}>
+                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", mb: 1.25 }}>
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
                         {onToggleSelect && (
                             <Checkbox
                                 size="small"
@@ -295,8 +295,8 @@ function FileCard({
                             sx={{
                                 bgcolor: styleConfig.bg,
                                 color: styleConfig.color,
-                                width: 44,
-                                height: 44,
+                                width: { xs: 38, sm: 44 },
+                                height: { xs: 38, sm: 44 },
                                 borderRadius: "10px",
                                 cursor: "pointer",
                                 transition: "all 0.15s ease",
@@ -314,6 +314,7 @@ function FileCard({
                                 size="small"
                                 onClick={() => onOpen(file)}
                                 sx={{
+                                    display: { xs: "none", sm: "inline-flex" },
                                     color: "#64748B",
                                     "&:hover": { bgcolor: "#EEF2FF", color: "#4F46E5" },
                                 }}
@@ -327,6 +328,7 @@ function FileCard({
                                 size="small"
                                 onClick={() => onDownload(file)}
                                 sx={{
+                                    display: { xs: "none", sm: "inline-flex" },
                                     color: "#64748B",
                                     "&:hover": { bgcolor: "#EEF2FF", color: "#4F46E5" },
                                 }}

@@ -22,8 +22,10 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CloudDoneRoundedIcon from "@mui/icons-material/CloudDoneRounded";
 import LaptopMacRoundedIcon from "@mui/icons-material/LaptopMacRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import IconButton from "@mui/material/IconButton";
 
-function Navbar({ title = "My Files" }) {
+function Navbar({ title = "My Files", onMobileToggle }) {
     const { user, setToken, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -63,28 +65,48 @@ function Navbar({ title = "My Files" }) {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                px: { xs: 2, md: 3.5 },
+                px: { xs: 1.5, sm: 2, md: 3.5 },
                 flexShrink: 0,
                 zIndex: 100,
                 boxSizing: "border-box",
             }}
         >
-            {/* Left: Page Title & Platform Badge */}
+            {/* Left: Hamburger (Mobile) + Page Title & Platform Badge */}
             <Box
                 sx={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 1.5,
+                    gap: { xs: 0.5, sm: 1.5 },
                     minWidth: 0,
                 }}
             >
+                {/* Mobile Menu Button */}
+                <IconButton
+                    onClick={onMobileToggle}
+                    size="small"
+                    sx={{
+                        display: { xs: "inline-flex", md: "none" },
+                        mr: 0.5,
+                        color: "#334155",
+                        p: 0.75,
+                        borderRadius: "8px",
+                        "&:hover": { bgcolor: "#F1F5F9" },
+                    }}
+                    aria-label="Open Navigation Menu"
+                >
+                    <MenuRoundedIcon sx={{ fontSize: 22 }} />
+                </IconButton>
+
                 <Typography
                     variant="subtitle1"
                     fontWeight={800}
                     color="#0F172A"
                     letterSpacing="-0.02em"
                     noWrap
+                    sx={{
+                        fontSize: { xs: "0.92rem", sm: "1.05rem" },
+                    }}
                 >
                     {title}
                 </Typography>
@@ -92,9 +114,10 @@ function Navbar({ title = "My Files" }) {
                 {isElectron ? (
                     <Chip
                         icon={<LaptopMacRoundedIcon sx={{ fontSize: "14px !important", color: "#4F46E5 !important" }} />}
-                        label="Desktop Client"
+                        label="Desktop"
                         size="small"
                         sx={{
+                            display: { xs: "none", sm: "inline-flex" },
                             height: 22,
                             fontSize: "0.7rem",
                             fontWeight: 700,
@@ -107,9 +130,10 @@ function Navbar({ title = "My Files" }) {
                 ) : (
                     <Chip
                         icon={<CloudDoneRoundedIcon sx={{ fontSize: "14px !important", color: "#059669 !important" }} />}
-                        label="Web Cloud"
+                        label="Cloud"
                         size="small"
                         sx={{
+                            display: { xs: "none", sm: "inline-flex" },
                             height: 22,
                             fontSize: "0.7rem",
                             fontWeight: 700,

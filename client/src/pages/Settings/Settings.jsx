@@ -89,9 +89,9 @@ function Settings() {
     const freeBytes = Math.max(0, TOTAL_QUOTA - storageUsed);
 
     return (
-        <Box sx={{ p: { xs: 2.5, md: 4 }, maxWidth: 1000, mx: "auto" }}>
-            <Box mb={4}>
-                <Typography variant="h4" fontWeight={800} color="#0F172A" letterSpacing="-0.03em">
+        <Box sx={{ p: { xs: 1.5, sm: 2.5, md: 4 }, maxWidth: 1000, mx: "auto" }}>
+            <Box mb={3.5}>
+                <Typography variant="h4" fontWeight={800} color="#0F172A" letterSpacing="-0.03em" sx={{ fontSize: { xs: "1.45rem", sm: "2rem" } }}>
                     Settings
                 </Typography>
                 <Typography variant="body2" color="text.secondary" mt={0.5}>
@@ -99,11 +99,11 @@ function Settings() {
                 </Typography>
             </Box>
 
-            <Grid container spacing={3}>
+            <Grid container spacing={{ xs: 2, sm: 3 }}>
                 {/* 1. Account Profile Card */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={0} sx={{ height: "100%", borderRadius: "14px", border: "1px solid #E2E8F0" }}>
-                        <CardContent sx={{ p: 3 }}>
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25, mb: 2.5 }}>
                                 <PersonRoundedIcon sx={{ color: "#4F46E5" }} />
                                 <Typography variant="subtitle1" fontWeight={700}>
@@ -171,7 +171,7 @@ function Settings() {
                 {/* 2. Storage Quota Card */}
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Card elevation={0} sx={{ height: "100%", borderRadius: "14px", border: "1px solid #E2E8F0" }}>
-                        <CardContent sx={{ p: 3 }}>
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25, mb: 2.5 }}>
                                 <CloudQueueRoundedIcon sx={{ color: "#0284C7" }} />
                                 <Typography variant="subtitle1" fontWeight={700}>
@@ -219,8 +219,8 @@ function Settings() {
                 {/* 3. Desktop Sync Settings */}
                 <Grid size={{ xs: 12 }}>
                     <Card elevation={0} sx={{ borderRadius: "14px", border: "1px solid #E2E8F0" }}>
-                        <CardContent sx={{ p: 3 }}>
-                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25, mb: 2 }}>
+                        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25, mb: 2, flexWrap: "wrap" }}>
                                 <LaptopMacRoundedIcon sx={{ color: "#4F46E5" }} />
                                 <Typography variant="subtitle1" fontWeight={700}>
                                     Desktop Synchronization
@@ -262,13 +262,14 @@ function Settings() {
                                             </Typography>
                                         </Box>
 
-                                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+                                        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, width: { xs: "100%", sm: "auto" }, gap: 1 }}>
                                             <Button
                                                 size="small"
                                                 variant="outlined"
                                                 startIcon={<FolderOpenRoundedIcon />}
                                                 onClick={handleOpenExplorer}
-                                                sx={{ borderRadius: "8px", fontWeight: 600 }}
+                                                fullWidth
+                                                sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: "8px", fontWeight: 600 }}
                                             >
                                                 Open in Explorer
                                             </Button>
@@ -277,7 +278,8 @@ function Settings() {
                                                 variant="contained"
                                                 startIcon={<EditRoundedIcon />}
                                                 onClick={handleChangeSyncFolder}
-                                                sx={{ borderRadius: "8px", fontWeight: 700 }}
+                                                fullWidth
+                                                sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: "8px", fontWeight: 700 }}
                                             >
                                                 Change Folder
                                             </Button>
@@ -318,7 +320,9 @@ function Settings() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         startIcon={<LaptopMacRoundedIcon />}
+                                        fullWidth
                                         sx={{
+                                            width: { xs: "100%", sm: "auto" },
                                             borderRadius: "8px",
                                             fontWeight: 700,
                                             whiteSpace: "nowrap",
@@ -339,7 +343,7 @@ function Settings() {
                     <Card elevation={0} sx={{ borderRadius: "14px", border: "1px solid #E2E8F0" }}>
                         <CardContent
                             sx={{
-                                p: 3,
+                                p: { xs: 2, sm: 3 },
                                 display: "flex",
                                 flexDirection: { xs: "column", sm: "row" },
                                 justifyContent: "space-between",
@@ -377,7 +381,9 @@ function Settings() {
                                 color="error"
                                 startIcon={<LogoutRoundedIcon />}
                                 onClick={handleLogout}
+                                fullWidth
                                 sx={{
+                                    width: { xs: "100%", sm: "auto" },
                                     borderRadius: "8px",
                                     fontWeight: 700,
                                     px: 2,

@@ -156,27 +156,27 @@ function Favorites() {
                 overflowY: "auto",
                 overflowX: "hidden",
                 boxSizing: "border-box",
-                p: { xs: 2.5, md: 4 },
+                p: { xs: 1.5, sm: 2.5, md: 4 },
             }}
         >
             <Box
                 display="flex"
                 justifyContent="space-between"
-                alignItems="flex-start"
-                flexWrap="wrap"
+                alignItems={{ xs: "stretch", sm: "flex-start" }}
+                flexDirection={{ xs: "column", sm: "row" }}
                 gap={2}
-                mb={4}
+                mb={3.5}
             >
                 <Box>
-                    <Typography variant="h4" fontWeight={800} color="#0F172A">
+                    <Typography variant="h4" fontWeight={800} color="#0F172A" sx={{ fontSize: { xs: "1.45rem", sm: "2rem" } }}>
                         Favorites
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" mt={0.5}>
+                    <Typography variant="body2" color="text.secondary" mt={0.5}>
                         Quickly access all your starred folders and files.
                     </Typography>
                 </Box>
 
-                <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+                <Box display="flex" alignItems="center" gap={1.5} width={{ xs: "100%", sm: "auto" }} justifyContent={{ xs: "space-between", sm: "flex-end" }}>
                     <TextField
                         size="small"
                         placeholder="Search favorites..."

@@ -190,7 +190,7 @@ function SharePage() {
                 alignItems: "center",
                 justifyContent: "center",
                 background: "linear-gradient(135deg, #090D16 0%, #0F172A 50%, #090D16 100%)",
-                p: 3,
+                p: { xs: 2, sm: 3 },
             }}
         >
             {/* Top Brand Banner */}
@@ -245,7 +245,7 @@ function SharePage() {
                     }}
                 />
 
-                <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+                <CardContent sx={{ p: { xs: 2.5, sm: 4 } }}>
                     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                         <Avatar
                             sx={{

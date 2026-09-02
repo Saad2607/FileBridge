@@ -25,13 +25,27 @@ function Breadcrumb() {
     };
 
     return (
-        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                minWidth: 0,
+                maxWidth: "100%",
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+                py: 0.5,
+                scrollbarWidth: "none",
+                "&::-webkit-scrollbar": { display: "none" },
+                WebkitOverflowScrolling: "touch",
+            }}
+        >
             <MuiBreadcrumbs
                 separator={<NavigateNextRoundedIcon fontSize="small" sx={{ color: "#94A3B8", mx: 0.25 }} />}
                 aria-label="folder navigation"
                 sx={{
                     "& .MuiBreadcrumbs-ol": {
                         alignItems: "center",
+                        flexWrap: "nowrap",
                     },
                 }}
             >

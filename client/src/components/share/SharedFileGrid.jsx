@@ -10,8 +10,8 @@ function SharedFileGrid({ files, onDisable }) {
         <Box
             sx={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-                gap: 3,
+                gridTemplateColumns: { xs: "1fr", sm: "repeat(auto-fill, minmax(300px, 1fr))" },
+                gap: { xs: 2, sm: 3 },
             }}
         >
             {files.map((file) => (

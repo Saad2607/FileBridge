@@ -23,13 +23,10 @@ function RecycleFileGrid({
     }
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }}>
             {files.map((file) => (
                 <Grid
-                    item
-                    xs={12}
-                    md={6}
-                    lg={4}
+                    size={{ xs: 12, sm: 6, md: 4 }}
                     key={file._id}
                 >
                     <RecycleFileCard

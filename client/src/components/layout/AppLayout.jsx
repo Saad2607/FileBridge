@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
@@ -30,6 +30,8 @@ function getPageTitle(pathname) {
 
 function AppLayout() {
     const location = useLocation();
+    const [mobileOpen, setMobileOpen] = useState(false);
+
     const {
         uploading,
         progress,
@@ -38,6 +40,14 @@ function AppLayout() {
 
     const isElectron = Boolean(window.electronAPI?.isElectron);
     const title = getPageTitle(location.pathname);
+
+    const handleMobileToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
+    const handleMobileClose = () => {
+        setMobileOpen(false);
+    };
 
     return (
         <Box
@@ -60,7 +70,10 @@ function AppLayout() {
                     overflow: "hidden",
                 }}
             >
-                <Sidebar />
+                <Sidebar
+                    mobileOpen={mobileOpen}
+                    onMobileClose={handleMobileClose}
+                />
 
                 <Box
                     sx={{
@@ -72,7 +85,10 @@ function AppLayout() {
                         minWidth: 0,
                     }}
                 >
-                    <Navbar title={title} />
+                    <Navbar
+                        title={title}
+                        onMobileToggle={handleMobileToggle}
+                    />
 
                     <Box
                         sx={{

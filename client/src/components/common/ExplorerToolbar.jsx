@@ -66,8 +66,10 @@ function ExplorerToolbar({
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 1.25,
+                    gap: 1,
                     flexWrap: "wrap",
+                    width: { xs: "100%", md: "auto" },
+                    justifyContent: { xs: "space-between", sm: "flex-end" },
                 }}
             >
                 <TextField
@@ -100,20 +102,22 @@ function ExplorerToolbar({
                     }}
                 />
 
-                <SortMenu
-                    value={sort}
-                    onChange={onSort}
-                />
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                    <SortMenu
+                        value={sort}
+                        onChange={onSort}
+                    />
 
-                <FilterMenu
-                    value={filter}
-                    onChange={onFilter}
-                />
+                    <FilterMenu
+                        value={filter}
+                        onChange={onFilter}
+                    />
 
-                <ViewToggle
-                    view={view}
-                    onChange={onViewChange}
-                />
+                    <ViewToggle
+                        view={view}
+                        onChange={onViewChange}
+                    />
+                </Box>
             </Box>
         </Box>
     );

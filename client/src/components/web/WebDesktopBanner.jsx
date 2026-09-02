@@ -33,9 +33,9 @@ function WebDesktopBanner() {
         <>
             <Box
                 sx={{
-                    mb: 3.5,
-                    p: 2,
-                    px: 3,
+                    mb: 3,
+                    p: { xs: 1.5, sm: 2 },
+                    px: { xs: 2, sm: 3 },
                     borderRadius: 3.5,
                     background: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)",
                     color: "#FFFFFF",
@@ -66,7 +66,7 @@ function WebDesktopBanner() {
                     </Box>
 
                     <Box>
-                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
                             <Typography variant="subtitle2" fontWeight={800} color="#FFFFFF">
                                 FileBridge Desktop Companion
                             </Typography>
@@ -83,13 +83,13 @@ function WebDesktopBanner() {
                                 }}
                             />
                         </Box>
-                        <Typography variant="caption" sx={{ color: "#94A3B8" }}>
+                        <Typography variant="caption" sx={{ color: "#94A3B8", display: "block", mt: 0.25 }}>
                             Auto-sync your local folders, access files offline, and manage files from the system tray.
                         </Typography>
                     </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.5, flexShrink: 0 }}>
+                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.5, width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "space-between", sm: "flex-end" } }}>
                     <Button
                         size="small"
                         variant="contained"
@@ -101,6 +101,7 @@ function WebDesktopBanner() {
                             fontWeight: 700,
                             borderRadius: 2,
                             px: 2,
+                            flex: { xs: 1, sm: "initial" },
                             "&:hover": {
                                 bgcolor: "#7DD3FC",
                             },
@@ -126,12 +127,12 @@ function WebDesktopBanner() {
                 maxWidth="sm"
                 fullWidth
                 PaperProps={{
-                    sx: { borderRadius: 4, overflow: "hidden" },
+                    sx: { borderRadius: { xs: 3, sm: 4 }, m: { xs: 1.5, sm: 2 }, overflow: "hidden" },
                 }}
             >
                 <DialogTitle
                     sx={{
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
                         display: "flex",
                         flexDirection: "row",
                         justifyContent: "space-between",
@@ -141,7 +142,7 @@ function WebDesktopBanner() {
                 >
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.5 }}>
                         <LaptopMacRoundedIcon color="primary" />
-                        <Typography variant="h6" fontWeight={700}>
+                        <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: "1.05rem", sm: "1.25rem" } }}>
                             FileBridge for Windows
                         </Typography>
                     </Box>
@@ -150,7 +151,7 @@ function WebDesktopBanner() {
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 3, bgcolor: "#F8FAFC" }}>
+                <DialogContent sx={{ p: { xs: 2, sm: 3 }, bgcolor: "#F8FAFC" }}>
                     <Typography variant="body2" color="text.secondary" mb={3}>
                         Install the official FileBridge desktop companion to unlock bi-directional background synchronization directly with your local PC folders.
                     </Typography>
@@ -206,14 +207,15 @@ function WebDesktopBanner() {
                     </Grid>
                 </DialogContent>
 
-                <DialogActions sx={{ p: 2.5, px: 3, justifyContent: "space-between", bgcolor: "#FFFFFF" }}>
+                <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, px: { xs: 2, sm: 3 }, flexDirection: { xs: "column-reverse", sm: "row" }, gap: 1, justifyContent: "space-between", bgcolor: "#FFFFFF" }}>
                     <Button
                         variant="outlined"
                         href={GITHUB_RELEASES_PAGE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         endIcon={<OpenInNewRoundedIcon sx={{ fontSize: 16 }} />}
-                        sx={{ borderRadius: 2.5, fontWeight: 600, color: "#64748B", borderColor: "#CBD5E1" }}
+                        fullWidth
+                        sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: 2.5, fontWeight: 600, color: "#64748B", borderColor: "#CBD5E1" }}
                     >
                         View Releases
                     </Button>
@@ -224,7 +226,9 @@ function WebDesktopBanner() {
                         target="_blank"
                         rel="noopener noreferrer"
                         startIcon={<DownloadRoundedIcon />}
+                        fullWidth
                         sx={{
+                            width: { xs: "100%", sm: "auto" },
                             borderRadius: 2.5,
                             fontWeight: 700,
                             background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",

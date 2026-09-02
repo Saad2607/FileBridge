@@ -19,11 +19,11 @@ function FileGrid({
     }
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={{ xs: 1.5, sm: 2 }}>
             {files.map((file) => (
                 <Grid
                     size={{
-                        xs: 12,
+                        xs: view === "grid" ? 6 : 12,
                         sm: view === "grid" ? 6 : 12,
                         md: view === "grid" ? 4 : 12,
                         lg: view === "grid" ? 3 : 12,

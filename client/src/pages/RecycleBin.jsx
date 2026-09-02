@@ -125,17 +125,17 @@ function RecycleBin() {
                 overflowY: "auto",
                 overflowX: "hidden",
                 boxSizing: "border-box",
-                p: { xs: 2.5, md: 4 },
+                p: { xs: 1.5, sm: 2.5, md: 4 },
             }}
         >
             {/* Header */}
-            <Box mb={4}>
+            <Box mb={3.5}>
                 <Box display="flex" alignItems="center" gap={1.5}>
-                    <Typography variant="h4" fontWeight={800} color="#0F172A">
+                    <Typography variant="h4" fontWeight={800} color="#0F172A" sx={{ fontSize: { xs: "1.45rem", sm: "2rem" } }}>
                         Recycle Bin
                     </Typography>
                 </Box>
-                <Typography variant="body1" color="text.secondary" mt={0.5}>
+                <Typography variant="body2" color="text.secondary" mt={0.5}>
                     Items in the Recycle Bin will be permanently removed when deleted.
                 </Typography>
             </Box>

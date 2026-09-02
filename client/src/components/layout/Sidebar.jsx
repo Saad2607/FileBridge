@@ -7,8 +7,9 @@ import {
     Typography,
     Divider,
     Avatar,
-    Chip,
     LinearProgress,
+    Drawer,
+    IconButton,
 } from "@mui/material";
 
 import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
@@ -19,6 +20,7 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import InsertChartRoundedIcon from "@mui/icons-material/InsertChartRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import toast from "react-hot-toast";
 
 import { useContext, useEffect, useState } from "react";
@@ -30,7 +32,7 @@ import { ROUTES } from "../../constants/routes";
 import { getDashboardStats } from "../../services/dashboardService";
 import { formatFileSize } from "../../utils/fileHelpers";
 
-function Sidebar() {
+function SidebarContent({ onMobileClose }) {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -48,6 +50,11 @@ function Sidebar() {
             })
             .catch(() => {});
     }, [location.pathname]);
+
+    const handleNavigate = (path) => {
+        if (onMobileClose) onMobileClose();
+        navigate(path);
+    };
 
     const mainNav = [
         {
@@ -89,6 +96,7 @@ function Sidebar() {
     ];
 
     const handleLogout = () => {
+        if (onMobileClose) onMobileClose();
         clearToken();
         clearUser();
         setToken(null);
@@ -110,6 +118,9 @@ function Sidebar() {
                         component={Link}
                         to={item.path}
                         selected={selected}
+                        onClick={() => {
+                            if (onMobileClose) onMobileClose();
+                        }}
                         sx={{
                             borderRadius: "10px",
                             py: 0.9,
@@ -155,56 +166,75 @@ function Sidebar() {
 
     return (
         <Box
-            component="aside"
             sx={{
-                width: 250,
-                bgcolor: "#FFFFFF",
-                borderRight: "1px solid #E2E8F0",
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
                 p: 2,
                 boxSizing: "border-box",
-                flexShrink: 0,
                 userSelect: "none",
+                bgcolor: "#FFFFFF",
             }}
         >
             {/* Brand Logo Header */}
             <Box
-                onClick={() => navigate(ROUTES.DASHBOARD)}
                 sx={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
-                    gap: 1.25,
-                    px: 1,
-                    py: 1,
+                    justifyContent: "space-between",
                     mb: 2.5,
-                    cursor: "pointer",
-                    borderRadius: "10px",
-                    "&:hover": { bgcolor: "#F8FAFC" },
+                    px: 1,
+                    py: 0.5,
                 }}
             >
-                <Avatar
+                <Box
+                    onClick={() => handleNavigate(ROUTES.DASHBOARD)}
                     sx={{
-                        background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
-                        width: 34,
-                        height: 34,
-                        boxShadow: "0 4px 12px rgba(79, 70, 229, 0.3)",
-                        borderRadius: "8px",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1.25,
+                        cursor: "pointer",
+                        borderRadius: "10px",
                     }}
                 >
-                    <CloudRoundedIcon sx={{ fontSize: 20, color: "#FFFFFF" }} />
-                </Avatar>
+                    <Avatar
+                        sx={{
+                            background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
+                            width: 34,
+                            height: 34,
+                            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.3)",
+                            borderRadius: "8px",
+                        }}
+                    >
+                        <CloudRoundedIcon sx={{ fontSize: 20, color: "#FFFFFF" }} />
+                    </Avatar>
 
-                <Box>
-                    <Typography variant="subtitle2" fontWeight={800} color="#0F172A" letterSpacing="-0.02em" lineHeight={1.2}>
-                        FileBridge
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" fontWeight={500} fontSize="0.7rem">
-                        Cloud &amp; Desktop
-                    </Typography>
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A" letterSpacing="-0.02em" lineHeight={1.2}>
+                            FileBridge
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" fontWeight={500} fontSize="0.7rem">
+                            Cloud &amp; Desktop
+                        </Typography>
+                    </Box>
                 </Box>
+
+                {onMobileClose && (
+                    <IconButton
+                        size="small"
+                        onClick={onMobileClose}
+                        sx={{
+                            display: { xs: "flex", md: "none" },
+                            color: "#64748B",
+                            "&:hover": { bgcolor: "#F1F5F9", color: "#0F172A" },
+                        }}
+                    >
+                        <CloseRoundedIcon sx={{ fontSize: 20 }} />
+                    </IconButton>
+                )}
             </Box>
 
             {/* Navigation Menus */}
@@ -323,7 +353,7 @@ function Sidebar() {
                 }}
             >
                 <Box
-                    onClick={() => navigate(ROUTES.SETTINGS)}
+                    onClick={() => handleNavigate(ROUTES.SETTINGS)}
                     sx={{
                         display: "flex",
                         flexDirection: "row",
@@ -378,6 +408,48 @@ function Sidebar() {
                 </Box>
             </Box>
         </Box>
+    );
+}
+
+function Sidebar({ mobileOpen = false, onMobileClose }) {
+    return (
+        <>
+            {/* Desktop Permanent Sidebar */}
+            <Box
+                component="aside"
+                sx={{
+                    display: { xs: "none", md: "flex" },
+                    width: 250,
+                    height: "100%",
+                    borderRight: "1px solid #E2E8F0",
+                    flexShrink: 0,
+                }}
+            >
+                <SidebarContent />
+            </Box>
+
+            {/* Mobile Temporary Drawer */}
+            <Drawer
+                variant="temporary"
+                anchor="left"
+                open={mobileOpen}
+                onClose={onMobileClose}
+                ModalProps={{ keepMounted: true }}
+                PaperProps={{
+                    sx: {
+                        width: 280,
+                        bgcolor: "#FFFFFF",
+                        boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+                    },
+                }}
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    zIndex: 1400,
+                }}
+            >
+                <SidebarContent onMobileClose={onMobileClose} />
+            </Drawer>
+        </>
     );
 }
 

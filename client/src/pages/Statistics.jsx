@@ -15,17 +15,20 @@ function Statistics() {
                 boxSizing: "border-box",
 
                 p: {
-                    xs: 2,
+                    xs: 1.5,
+                    sm: 2.5,
                     md: 4,
                 },
             }}
         >
-            <Box sx={{ mb: 4 }}>
+            <Box sx={{ mb: 3.5 }}>
                 <Typography
                     variant="h4"
-                    fontWeight={700}
+                    fontWeight={800}
                     sx={{
-                        mb: 1,
+                        fontSize: { xs: "1.45rem", sm: "2rem" },
+                        mb: 0.5,
+                        color: "#0F172A",
                     }}
                 >
                     Statistics

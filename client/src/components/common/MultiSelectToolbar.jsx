@@ -17,18 +17,21 @@ function MultiSelectToolbar({
                 elevation={6}
                 sx={{
                     position: "fixed",
-                    bottom: 28,
+                    bottom: { xs: 16, sm: 28 },
                     left: "50%",
                     transform: "translateX(-50%) !important",
                     zIndex: 1300,
-                    borderRadius: 999,
-                    px: 3,
-                    py: 1.25,
+                    borderRadius: { xs: "16px", sm: 999 },
+                    px: { xs: 1.5, sm: 3 },
+                    py: { xs: 1, sm: 1.25 },
+                    width: { xs: "calc(100% - 32px)", sm: "auto" },
+                    maxWidth: 500,
                     bgcolor: "#0F172A",
                     color: "#FFFFFF",
                     display: "flex",
                     alignItems: "center",
-                    gap: 2,
+                    justifyContent: "space-between",
+                    gap: { xs: 1, sm: 2 },
                     boxShadow: "0 20px 40px rgba(15, 23, 42, 0.4)",
                     border: "1px solid rgba(255, 255, 255, 0.15)",
                 }}
@@ -45,8 +48,8 @@ function MultiSelectToolbar({
                             minWidth: 22,
                         }}
                     />
-                    <Typography variant="body2" fontWeight={600} color="#FFFFFF">
-                        {selectedCount === 1 ? "item selected" : "items selected"}
+                    <Typography variant="body2" fontWeight={600} color="#FFFFFF" noWrap sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }}>
+                        {selectedCount === 1 ? "selected" : "selected"}
                     </Typography>
                 </Box>
 

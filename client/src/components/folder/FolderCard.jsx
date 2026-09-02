@@ -183,10 +183,10 @@ function FolderCard({
                 },
             }}
         >
-            <CardContent sx={{ p: 2 }}>
+            <CardContent sx={{ p: { xs: 1.25, sm: 2 }, "&:last-child": { pb: { xs: 1.25, sm: 2 } } }}>
                 {/* Header: Checkbox / Icon / Quick Actions */}
-                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", mb: 1.5 }}>
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25 }}>
+                <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", mb: 1.25 }}>
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
                         {onToggleSelect && (
                             <Checkbox
                                 size="small"
@@ -205,15 +205,15 @@ function FolderCard({
                             sx={{
                                 bgcolor: "#EEF2FF",
                                 color: "#4F46E5",
-                                width: 44,
-                                height: 44,
+                                width: { xs: 38, sm: 44 },
+                                height: { xs: 38, sm: 44 },
                                 borderRadius: "10px",
                                 cursor: "pointer",
                                 transition: "all 0.15s ease",
                                 "&:hover": { bgcolor: "#E0E7FF", transform: "scale(1.03)" },
                             }}
                         >
-                            <FolderRoundedIcon sx={{ fontSize: 26 }} />
+                            <FolderRoundedIcon sx={{ fontSize: { xs: 22, sm: 26 } }} />
                         </Avatar>
                     </Box>
 
