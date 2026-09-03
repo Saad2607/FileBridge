@@ -17,6 +17,7 @@ import {
     Typography,
     Box,
     Avatar,
+    Tooltip,
 } from "@mui/material";
 
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
@@ -25,6 +26,8 @@ import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import LinkOffRoundedIcon from "@mui/icons-material/LinkOffRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import toast from "react-hot-toast";
 
 function ShareDialog({
@@ -36,12 +39,14 @@ function ShareDialog({
 }) {
     const [expiry, setExpiry] = useState("never");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (!open) {
             setExpiry("never");
             setPassword("");
+            setShowPassword(false);
             setCopied(false);
         }
     }, [open]);
@@ -133,10 +138,28 @@ function ShareDialog({
                         </Box>
                         <TextField
                             size="small"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Leave empty for public access"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             fullWidth
+                            InputProps={{
+                                endAdornment: password ? (
+                                    <InputAdornment position="end">
+                                        <Tooltip title={showPassword ? "Hide password" : "Show password"} arrow placement="top">
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                edge="end"
+                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                                sx={{ color: "#64748B", "&:hover": { color: "#4F46E5" } }}
+                                            >
+                                                {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                ) : null,
+                            }}
                             sx={{
                                 "& .MuiOutlinedInput-root": {
                                     borderRadius: "10px",

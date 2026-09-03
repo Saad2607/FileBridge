@@ -13,6 +13,7 @@ import {
     Paper,
     Grid,
     Link as MuiLink,
+    Tooltip,
 } from "@mui/material";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
 import BadgeRoundedIcon from "@mui/icons-material/BadgeRounded";
@@ -377,13 +378,17 @@ function Register() {
                                             ),
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <IconButton
-                                                        onClick={() => setShowPassword(!showPassword)}
-                                                        edge="end"
-                                                        size="small"
-                                                    >
-                                                        {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
-                                                    </IconButton>
+                                                    <Tooltip title={showPassword ? "Hide password" : "Show password"} arrow placement="top">
+                                                        <IconButton
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            edge="end"
+                                                            size="small"
+                                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                                            sx={{ color: "#64748B", "&:hover": { color: "#4F46E5" } }}
+                                                        >
+                                                            {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </InputAdornment>
                                             ),
                                         }}

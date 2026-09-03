@@ -12,6 +12,7 @@ import {
     Chip,
     InputAdornment,
     IconButton,
+    Tooltip,
 } from "@mui/material";
 import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
 import CloudRoundedIcon from "@mui/icons-material/CloudRounded";
@@ -306,13 +307,17 @@ function SharePage() {
                                         ),
                                         endAdornment: (
                                             <InputAdornment position="end">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    edge="end"
-                                                >
-                                                    {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
-                                                </IconButton>
+                                                <Tooltip title={showPassword ? "Hide password" : "Show password"} arrow placement="top">
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        edge="end"
+                                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                                        sx={{ color: "#64748B", "&:hover": { color: "#4F46E5" } }}
+                                                    >
+                                                        {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
+                                                    </IconButton>
+                                                </Tooltip>
                                             </InputAdornment>
                                         ),
                                     }}
