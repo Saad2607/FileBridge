@@ -227,18 +227,20 @@ function Settings() {
 
                 {/* 3. Desktop Sync Settings */}
                 <Grid size={{ xs: 12 }}>
-                    <Card elevation={0} sx={{ borderRadius: "14px", border: "1px solid #E2E8F0" }}>
+                    <Card elevation={0} sx={{ borderRadius: "14px", border: "1px solid #E2E8F0", overflow: "hidden" }}>
                         <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.25, mb: 2, flexWrap: "wrap" }}>
-                                <LaptopMacRoundedIcon sx={{ color: "#4F46E5" }} />
-                                <Typography variant="subtitle1" fontWeight={700}>
-                                    Desktop Synchronization
-                                </Typography>
+                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 1.25, mb: 2, flexWrap: "wrap" }}>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                                    <LaptopMacRoundedIcon sx={{ color: "#4F46E5" }} />
+                                    <Typography variant="subtitle1" fontWeight={700} color="#0F172A">
+                                        Desktop Synchronization
+                                    </Typography>
+                                </Box>
                                 <Chip
-                                    label={isElectron ? "DESKTOP RUNNING" : "WEB CLOUD MODE"}
+                                    label={isElectron ? "DESKTOP COMPANION ACTIVE" : "WEB CLOUD MODE"}
                                     size="small"
                                     color={isElectron ? "success" : "default"}
-                                    sx={{ fontWeight: 700, height: 20, fontSize: "0.68rem" }}
+                                    sx={{ fontWeight: 700, height: 22, fontSize: "0.68rem" }}
                                 />
                             </Box>
 
@@ -251,11 +253,11 @@ function Settings() {
                                     <Box
                                         sx={{
                                             display: "flex",
-                                            flexDirection: { xs: "column", sm: "row" },
-                                            alignItems: { xs: "flex-start", sm: "center" },
+                                            flexDirection: { xs: "column", md: "row" },
+                                            alignItems: { xs: "stretch", md: "center" },
                                             justifyContent: "space-between",
                                             p: 2,
-                                            borderRadius: "10px",
+                                            borderRadius: "12px",
                                             bgcolor: "#F8FAFC",
                                             border: "1px solid #E2E8F0",
                                             gap: 2,
@@ -263,22 +265,45 @@ function Settings() {
                                         }}
                                     >
                                         <Box minWidth={0} flex={1}>
-                                            <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" fontSize="0.72rem">
+                                            <Typography variant="caption" color="text.secondary" fontWeight={700} display="block" fontSize="0.72rem" letterSpacing="0.04em">
                                                 LOCAL SYNC DIRECTORY
                                             </Typography>
-                                            <Typography variant="body2" fontWeight={700} fontFamily="monospace" noWrap>
+                                            <Typography
+                                                variant="body2"
+                                                fontWeight={700}
+                                                fontFamily="monospace"
+                                                sx={{
+                                                    bgcolor: "#FFFFFF",
+                                                    px: 1.25,
+                                                    py: 0.5,
+                                                    borderRadius: "8px",
+                                                    border: "1px solid #E2E8F0",
+                                                    mt: 0.5,
+                                                    display: "inline-block",
+                                                    maxWidth: "100%",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
                                                 {syncDir || "C:\\Users\\User\\FileBridge"}
                                             </Typography>
                                         </Box>
 
-                                        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, width: { xs: "100%", sm: "auto" }, gap: 1 }}>
+                                        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: 1.25, flexShrink: 0 }}>
                                             <Button
                                                 size="small"
                                                 variant="outlined"
                                                 startIcon={<FolderOpenRoundedIcon />}
                                                 onClick={handleOpenExplorer}
-                                                fullWidth
-                                                sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: "8px", fontWeight: 600 }}
+                                                sx={{
+                                                    width: { xs: "100%", sm: "auto" },
+                                                    borderRadius: "8px",
+                                                    fontWeight: 600,
+                                                    textTransform: "none",
+                                                    py: 0.9,
+                                                    px: 2,
+                                                }}
                                             >
                                                 Open in Explorer
                                             </Button>
@@ -287,8 +312,15 @@ function Settings() {
                                                 variant="contained"
                                                 startIcon={<EditRoundedIcon />}
                                                 onClick={handleChangeSyncFolder}
-                                                fullWidth
-                                                sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: "8px", fontWeight: 700 }}
+                                                sx={{
+                                                    width: { xs: "100%", sm: "auto" },
+                                                    borderRadius: "8px",
+                                                    fontWeight: 700,
+                                                    textTransform: "none",
+                                                    py: 0.9,
+                                                    px: 2,
+                                                    background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
+                                                }}
                                             >
                                                 Change Folder
                                             </Button>
@@ -303,23 +335,23 @@ function Settings() {
                             ) : (
                                 <Box
                                     sx={{
-                                        p: 2.5,
-                                        borderRadius: "10px",
+                                        p: { xs: 2, sm: 2.5 },
+                                        borderRadius: "12px",
                                         bgcolor: "#F8FAFC",
                                         border: "1px solid #E2E8F0",
                                         display: "flex",
-                                        flexDirection: { xs: "column", sm: "row" },
+                                        flexDirection: { xs: "column", md: "row" },
                                         justifyContent: "space-between",
-                                        alignItems: { xs: "flex-start", sm: "center" },
-                                        gap: 2,
+                                        alignItems: { xs: "stretch", md: "center" },
+                                        gap: 2.5,
                                     }}
                                 >
-                                    <Box>
-                                        <Typography variant="subtitle2" fontWeight={700} color="#0F172A">
+                                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                                        <Typography variant="subtitle2" fontWeight={800} color="#0F172A" fontSize="0.95rem">
                                             Enable Local Background Sync
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Run the FileBridge Electron companion on your PC to watch a local directory and auto-upload changes.
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.5 }}>
+                                            Run the FileBridge Electron companion on your PC to watch a local directory and auto-upload changes in real time.
                                         </Typography>
                                     </Box>
 
@@ -329,14 +361,22 @@ function Settings() {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         startIcon={<LaptopMacRoundedIcon />}
-                                        fullWidth
                                         sx={{
-                                            width: { xs: "100%", sm: "auto" },
-                                            borderRadius: "8px",
+                                            width: { xs: "100%", md: "auto" },
+                                            flexShrink: 0,
+                                            py: 1.25,
+                                            px: 2.5,
+                                            borderRadius: "10px",
                                             fontWeight: 700,
+                                            fontSize: "0.88rem",
+                                            textTransform: "none",
                                             whiteSpace: "nowrap",
                                             background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
-                                            boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
+                                            boxShadow: "0 4px 14px rgba(79, 70, 229, 0.28)",
+                                            "&:hover": {
+                                                background: "linear-gradient(135deg, #4338CA 0%, #0369A1 100%)",
+                                                boxShadow: "0 6px 18px rgba(79, 70, 229, 0.38)",
+                                            },
                                         }}
                                     >
                                         Download Desktop App (.exe)
@@ -356,7 +396,7 @@ function Settings() {
                                 display: "flex",
                                 flexDirection: { xs: "column", sm: "row" },
                                 justifyContent: "space-between",
-                                alignItems: { xs: "flex-start", sm: "center" },
+                                alignItems: { xs: "stretch", sm: "center" },
                                 gap: 2,
                             }}
                         >
@@ -371,6 +411,7 @@ function Settings() {
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
+                                        flexShrink: 0,
                                     }}
                                 >
                                     <SecurityRoundedIcon sx={{ fontSize: 20 }} />
@@ -390,12 +431,14 @@ function Settings() {
                                 color="error"
                                 startIcon={<LogoutRoundedIcon />}
                                 onClick={handleLogout}
-                                fullWidth
                                 sx={{
                                     width: { xs: "100%", sm: "auto" },
+                                    flexShrink: 0,
                                     borderRadius: "8px",
                                     fontWeight: 700,
-                                    px: 2,
+                                    textTransform: "none",
+                                    py: 0.9,
+                                    px: 2.25,
                                     borderColor: "#FCA5A5",
                                     "&:hover": { bgcolor: "#FEF2F2", borderColor: "#EF4444" },
                                 }}

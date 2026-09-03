@@ -151,13 +151,30 @@ function DesktopSyncHub() {
                     </Box>
 
                     {/* Right: Actions */}
-                    <Box display="flex" alignItems="center" gap={1.25} flexWrap="wrap">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: { xs: "column", sm: "row" },
+                            alignItems: { xs: "stretch", sm: "center" },
+                            gap: 1.25,
+                            width: { xs: "100%", md: "auto" },
+                            flexShrink: 0,
+                        }}
+                    >
                         <Button
                             size="small"
                             variant="outlined"
                             startIcon={<FolderOpenRoundedIcon />}
                             onClick={handleOpenInExplorer}
-                            sx={{ borderRadius: 2.5, fontWeight: 600, color: "#334155" }}
+                            sx={{
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                color: "#334155",
+                                textTransform: "none",
+                                py: 0.8,
+                                px: 1.75,
+                                width: { xs: "100%", sm: "auto" },
+                            }}
                         >
                             Open in Explorer
                         </Button>
@@ -167,7 +184,15 @@ function DesktopSyncHub() {
                             variant="outlined"
                             startIcon={<EditRoundedIcon />}
                             onClick={handleChangeDirectory}
-                            sx={{ borderRadius: 2.5, fontWeight: 600, color: "#334155" }}
+                            sx={{
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                color: "#334155",
+                                textTransform: "none",
+                                py: 0.8,
+                                px: 1.75,
+                                width: { xs: "100%", sm: "auto" },
+                            }}
                         >
                             Change Folder
                         </Button>
@@ -179,8 +204,12 @@ function DesktopSyncHub() {
                             startIcon={isWatching ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
                             onClick={handleToggleSync}
                             sx={{
-                                borderRadius: 2.5,
+                                borderRadius: "8px",
                                 fontWeight: 700,
+                                textTransform: "none",
+                                py: 0.8,
+                                px: 2,
+                                width: { xs: "100%", sm: "auto" },
                                 bgcolor: isWatching ? "#F1F5F9" : undefined,
                                 color: isWatching ? "#475569" : undefined,
                                 "&:hover": {

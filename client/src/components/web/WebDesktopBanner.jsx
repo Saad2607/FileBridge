@@ -89,7 +89,17 @@ function WebDesktopBanner() {
                     </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1.5, width: { xs: "100%", sm: "auto" }, justifyContent: { xs: "space-between", sm: "flex-end" } }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 1.5,
+                        width: { xs: "100%", md: "auto" },
+                        justifyContent: { xs: "space-between", md: "flex-end" },
+                        flexShrink: 0,
+                    }}
+                >
                     <Button
                         size="small"
                         variant="contained"
@@ -99,9 +109,12 @@ function WebDesktopBanner() {
                             bgcolor: "#38BDF8",
                             color: "#0F172A",
                             fontWeight: 700,
-                            borderRadius: 2,
-                            px: 2,
-                            flex: { xs: 1, sm: "initial" },
+                            borderRadius: "10px",
+                            py: 1,
+                            px: 2.25,
+                            textTransform: "none",
+                            fontSize: "0.85rem",
+                            flex: { xs: 1, md: "initial" },
                             "&:hover": {
                                 bgcolor: "#7DD3FC",
                             },
@@ -113,7 +126,8 @@ function WebDesktopBanner() {
                     <IconButton
                         size="small"
                         onClick={() => setDismissed(true)}
-                        sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF" } }}
+                        sx={{ color: "#94A3B8", "&:hover": { color: "#FFFFFF", bgcolor: "rgba(255,255,255,0.1)" } }}
+                        aria-label="Dismiss banner"
                     >
                         <CloseRoundedIcon sx={{ fontSize: 18 }} />
                     </IconButton>
@@ -207,15 +221,23 @@ function WebDesktopBanner() {
                     </Grid>
                 </DialogContent>
 
-                <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, px: { xs: 2, sm: 3 }, flexDirection: { xs: "column-reverse", sm: "row" }, gap: 1, justifyContent: "space-between", bgcolor: "#FFFFFF" }}>
+                <DialogActions sx={{ p: { xs: 2, sm: 2.5 }, px: { xs: 2, sm: 3 }, flexDirection: { xs: "column-reverse", sm: "row" }, gap: 1.25, justifyContent: "space-between", bgcolor: "#FFFFFF" }}>
                     <Button
                         variant="outlined"
                         href={GITHUB_RELEASES_PAGE_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         endIcon={<OpenInNewRoundedIcon sx={{ fontSize: 16 }} />}
-                        fullWidth
-                        sx={{ width: { xs: "100%", sm: "auto" }, borderRadius: 2.5, fontWeight: 600, color: "#64748B", borderColor: "#CBD5E1" }}
+                        sx={{
+                            width: { xs: "100%", sm: "auto" },
+                            borderRadius: "10px",
+                            fontWeight: 600,
+                            color: "#64748B",
+                            borderColor: "#CBD5E1",
+                            textTransform: "none",
+                            py: 1,
+                            px: 2,
+                        }}
                     >
                         View Releases
                     </Button>
@@ -226,11 +248,13 @@ function WebDesktopBanner() {
                         target="_blank"
                         rel="noopener noreferrer"
                         startIcon={<DownloadRoundedIcon />}
-                        fullWidth
                         sx={{
                             width: { xs: "100%", sm: "auto" },
-                            borderRadius: 2.5,
+                            borderRadius: "10px",
                             fontWeight: 700,
+                            textTransform: "none",
+                            py: 1.1,
+                            px: 2.5,
                             background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
                             boxShadow: "0 4px 12px rgba(79, 70, 229, 0.3)",
                             "&:hover": {
