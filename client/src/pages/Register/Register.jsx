@@ -350,28 +350,9 @@ function Register() {
 
                                 {/* Password */}
                                 <Box mb={3.5}>
-                                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.75}>
-                                        <Typography variant="caption" fontWeight={700} color="text.secondary" display="block" fontSize="0.72rem">
-                                            PASSWORD
-                                        </Typography>
-                                        <Button
-                                            type="button"
-                                            size="small"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            startIcon={showPassword ? <VisibilityOff sx={{ fontSize: "16px !important" }} /> : <Visibility sx={{ fontSize: "16px !important" }} />}
-                                            sx={{
-                                                p: 0,
-                                                minWidth: "auto",
-                                                textTransform: "none",
-                                                fontSize: "0.78rem",
-                                                fontWeight: 700,
-                                                color: "#4F46E5",
-                                                "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
-                                            }}
-                                        >
-                                            {showPassword ? "Hide Password" : "Show Password"}
-                                        </Button>
-                                    </Box>
+                                    <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
+                                        PASSWORD
+                                    </Typography>
                                     <TextField
                                         fullWidth
                                         size="small"

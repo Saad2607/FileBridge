@@ -272,28 +272,9 @@ function SharePage() {
 
                         {file.requiresPassword && (
                             <Box width="100%" sx={{ mb: 2.75 }} textAlign="left">
-                                <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.75}>
-                                    <Typography variant="caption" fontWeight={700} color="#475569" display="block" fontSize="0.75rem" letterSpacing="0.04em">
-                                        PASSWORD REQUIRED
-                                    </Typography>
-                                    <Button
-                                        type="button"
-                                        size="small"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        startIcon={showPassword ? <VisibilityOff sx={{ fontSize: "15px !important" }} /> : <Visibility sx={{ fontSize: "15px !important" }} />}
-                                        sx={{
-                                            p: 0,
-                                            minWidth: "auto",
-                                            textTransform: "none",
-                                            fontSize: "0.75rem",
-                                            fontWeight: 700,
-                                            color: "#4F46E5",
-                                            "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
-                                        }}
-                                    >
-                                        {showPassword ? "Hide Password" : "Show Password"}
-                                    </Button>
-                                </Box>
+                                <Typography variant="caption" fontWeight={700} color="#475569" display="block" mb={0.75} fontSize="0.75rem" letterSpacing="0.04em">
+                                    PASSWORD REQUIRED
+                                </Typography>
                                 <TextField
                                     fullWidth
                                     size="small"
