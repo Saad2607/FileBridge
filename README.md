@@ -1,6 +1,6 @@
 # ⚡ FileBridge
 
-> **A modern, high-performance personal cloud storage and desktop synchronization platform built with the MERN stack and Electron.**
+> **A modern, high-performance personal cloud storage, in-browser media workstation, and desktop synchronization platform built with the MERN stack and Electron.**
 
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8.1-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -16,13 +16,34 @@
 
 ## 📖 Overview
 
-**FileBridge** is an all-in-one personal cloud file management suite combining a **modern React web application** with an **Electron desktop companion**. Inspired by platforms like Google Drive and Dropbox, FileBridge provides a seamless, intuitive environment for organizing, previewing, searching, sharing, and syncing your files across devices.
+**FileBridge** is an all-in-one personal cloud file management suite combining a **modern React web application** with an **Electron desktop companion** and built-in **in-browser media & code editing workstations**. Inspired by platforms like Google Drive and Dropbox, FileBridge provides a seamless, intuitive environment for organizing, editing, transforming, previewing, searching, sharing, and syncing your files across devices.
 
 Designed with an **Electric Indigo (`#4F46E5`) & Sky Blue (`#0284C7`)** SaaS design system, FileBridge emphasizes micro-interactions, responsive ergonomics, and high security.
 
 ---
 
 ## ✨ Features
+
+### 🎨 FileBridge Studio (In-Browser Workstations)
+- **Image Studio & Transformer**:
+  - Convert images on the fly between **WebP**, **PNG**, and **JPEG** using HTML5 Canvas.
+  - Scale & dimension adjustment with aspect ratio lock and quick presets (`50%`, `75%`, `100%`, `150%`, `200%`).
+  - Real-time quality compression slider (`10% - 100%`) with dynamic size savings comparison badges.
+  - Visual filters: Brightness, Contrast, 90° Rotation, and Horizontal Flip.
+  - One-click cloud saving or direct local download.
+- **Cloud Code & Document IDE**:
+  - In-browser code editing for `.html`, `.css`, `.js`, `.jsx`, `.ts`, `.tsx`, `.json`, `.md`, `.py`, `.sql`, `.env`, `.yml`, `.xml`, `.csv`, and `.txt`.
+  - Gutter line numbers with synchronized scrolling.
+  - Tab key indentation support (4 spaces) and Word Wrap toggle.
+  - Live statistics: Line count, Word count, and Character count.
+  - Keyboard shortcuts (`Ctrl + S` / `Cmd + S` to save directly to cloud storage).
+
+### ⚡ Smart Share Hub (Secure & Self-Destructing Links)
+- **🔥 Burn After Download**: Create one-time links that automatically self-destruct and revoke access permanently after a single download.
+- **Granular Expiration**: Set link lifetimes (`10m` self-destruct, `1h`, `24h`, `7d`, `30d`, or `Never`).
+- **Password Protection**: Optional bcrypt-hashed password protection on public downloads.
+- **Dedicated Recipient Portal**: Clean public download page displaying single-use warning badges and password authorization.
+- **Instant Revocation**: One-click sharing disable and active links management hub.
 
 ### 🖥️ Dual-Platform Duality (Web & Desktop)
 - **Web Cloud Client**: Lightweight, fast single-page app accessible from any browser with companion download promotions.
@@ -35,25 +56,19 @@ Designed with an **Electric Indigo (`#4F46E5`) & Sky Blue (`#0284C7`)** SaaS des
 - **MIME-Based Badges**: Smart color-coded icons and tags for Images, PDFs, Videos, Audio, Archives, and Code.
 - **Drag & Drop Uploads**: Fluid multi-file upload drop zone with floating progress tracker.
 - **Multi-Selection & Batch Actions**: Batch favorite or batch move items to Recycle Bin with a floating action capsule.
-- **Quick Hover Actions**: Instant preview, download, rename, star, share, and delete directly on card hover.
+- **Quick Actions Menu**: Instant preview, edit in studio, download, rename, star, share, and delete directly from the context menu.
 
 ### 👁️ Instant In-App File Previews
-- **Images**: High-resolution viewer with smooth scaling.
+- **Images**: High-resolution viewer with direct "Open in Studio" action.
 - **PDF Documents**: Embedded native document preview.
-- **Code & Text**: Monospace formatted text reader.
-
-### 🔗 Granular File Sharing
-- **Secure Share Links**: Unique UUID-generated public share links.
-- **Password Protection**: Optional bcrypt-hashed password protection on public downloads.
-- **Configurable Expiration**: Set link lifetimes (`1h`, `24h`, `7d`, `30d`, or `Never`).
-- **Dedicated Recipient Portal**: Clean public download page for recipients.
-- **Instant Revocation**: One-click sharing disable and active links management hub.
+- **Code & Text**: Formatted reader with direct "Edit File" action.
+- **Video & Audio**: Built-in HTML5 media players.
 
 ### 📊 Storage & Analytics
 - **Live Storage Quota Bar**: Visual breakdown of storage consumption against tier limits.
 - **File Type Distribution**: Interactive file category analytics and storage allocation meters.
 - **Largest Files Analyzer**: Rapidly identify and manage storage-heavy files.
-- **Activity Feed**: Comprehensive audit trail of uploads, downloads, renames, and deletions.
+- **Activity Feed**: Comprehensive audit trail of uploads, downloads, edits, renames, and deletions.
 
 ### ♻️ Safe Two-Step Deletion (Recycle Bin)
 - **Soft Deletion**: Accidental deletions move items to the Recycle Bin with cascade guards.
@@ -95,6 +110,7 @@ FileBridge/
 │   │   │   ├── preview/        # FilePreviewDialog, Image/Pdf/Text Previewers
 │   │   │   ├── recycleBin/     # RecycleFileCard, RecycleFolderCard
 │   │   │   ├── share/          # ShareDialog, SharedFileCard
+│   │   │   ├── studio/         # ImageStudioDialog, CodeEditorDialog
 │   │   │   └── upload/         # DragDropZone, UploadProgress
 │   │   ├── constants/          # Application route definitions
 │   │   ├── context/            # AuthContext, FolderContext, UploadContext
@@ -228,12 +244,14 @@ npm run build:client
 | `DELETE` | `/api/folders/:id` | Move folder to Recycle Bin | Yes |
 | `GET` | `/api/files` | Retrieve files (root or by folder query) | Yes |
 | `POST` | `/api/files/upload` | Multipart file upload | Yes |
-| `GET` | `/api/files/download/:id` | Download file by ID | Yes |
+| `GET` | `/api/files/download/:id` | Download file / binary stream by ID | Yes |
+| `GET` | `/api/files/preview/:id` | Direct in-browser stream with CORS headers | No |
+| `PUT` | `/api/files/:id/content` | Update & save code/text file content | Yes |
 | `PUT` | `/api/files/:id` | Rename file | Yes |
 | `DELETE` | `/api/files/:id` | Move file to Recycle Bin | Yes |
-| `POST` | `/api/share/:id` | Generate secure public share link | Yes |
-| `GET` | `/api/share/:token` | Retrieve public file metadata | No |
-| `GET` | `/api/share/:token/download` | Download shared file (with password validation) | No |
+| `POST` | `/api/share/:id` | Generate secure public share link (with burn & expiry) | Yes |
+| `GET` | `/api/share/:token` | Retrieve public file metadata & burn status | No |
+| `GET` | `/api/share/:token/download` | Download shared file (with password validation & burn auto-destruct) | No |
 | `GET` | `/api/dashboard/stats` | Retrieve aggregate storage & file metrics | Yes |
 | `GET` | `/api/dashboard/analytics` | Retrieve MIME-type distribution & largest files | Yes |
 | `GET` | `/api/recycle-bin/files` | Retrieve deleted files | Yes |
@@ -263,4 +281,4 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 ## 👨‍💻 Author
 
 **Mohammed Saad Shaikh**  
-- GitHub: [@Saad2607](https://github.com/Saad2607)
+- GitHub: [@Saad2607](https://github.com/Saad2607)
