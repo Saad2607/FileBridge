@@ -6,10 +6,8 @@ const File = require("../models/File");
 const { logUserActivity } = require("../utils/activityLogger");
 
 const createShareLink = async (req, res) => {
-
     try {
-
-        const { expiry, password } = req.body;
+        const { expiry, password, burnAfterDownload } = req.body;
 
         const file = await File.findOne({
             _id: req.params.id,
@@ -18,52 +16,38 @@ const createShareLink = async (req, res) => {
         });
 
         if (!file) {
-
             return res.status(404).json({
                 success: false,
                 message: "File not found.",
             });
-
         }
 
         let shareExpiry = null;
 
         switch (expiry) {
-
+            case "10m":
+                shareExpiry = new Date(Date.now() + 10 * 60 * 1000);
+                break;
             case "1h":
-                shareExpiry = new Date(
-                    Date.now() + 60 * 60 * 1000
-                );
+                shareExpiry = new Date(Date.now() + 60 * 60 * 1000);
                 break;
-
             case "24h":
-                shareExpiry = new Date(
-                    Date.now() + 24 * 60 * 60 * 1000
-                );
+                shareExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
                 break;
-
             case "7d":
-                shareExpiry = new Date(
-                    Date.now() + 7 * 24 * 60 * 60 * 1000
-                );
+                shareExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
                 break;
-
             case "30d":
-                shareExpiry = new Date(
-                    Date.now() + 30 * 24 * 60 * 60 * 1000
-                );
+                shareExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
                 break;
-
             default:
                 shareExpiry = null;
-
         }
 
         file.shareToken = uuidv4();
-
         file.isPublic = true;
-
         file.shareExpiry = shareExpiry;
+        file.burnAfterDownload = Boolean(burnAfterDownload);
 
         if (password && password.trim()) {
             file.sharePassword = await bcrypt.hash(password, 10);
@@ -79,7 +63,7 @@ const createShareLink = async (req, res) => {
             targetType: "file",
             targetId: file._id,
             targetName: file.originalName,
-            metadata: { expiry, hasPassword: !!file.sharePassword },
+            metadata: { expiry, hasPassword: !!file.sharePassword, burnAfterDownload: file.burnAfterDownload },
         });
 
         const clientOrigin = req.get("origin") || req.get("referer")?.replace(/\/$/, "") || "http://localhost:5173";
@@ -89,25 +73,19 @@ const createShareLink = async (req, res) => {
             success: true,
             shareToken: file.shareToken,
             shareUrl,
+            burnAfterDownload: file.burnAfterDownload,
         });
-
     } catch (error) {
-
         console.error(error);
-
         res.status(500).json({
             success: false,
             message: "Unable to generate share link.",
         });
-
     }
-
 };
 
 const getSharedFile = async (req, res) => {
-
     try {
-
         const file = await File.findOne({
             shareToken: req.params.token,
             isPublic: true,
@@ -115,24 +93,17 @@ const getSharedFile = async (req, res) => {
         });
 
         if (!file) {
-
             return res.status(404).json({
                 success: false,
-                message: "Shared file not found.",
+                message: "Shared file not found or has been burned.",
             });
-
         }
 
-        if (
-            file.shareExpiry &&
-            file.shareExpiry < new Date()
-        ) {
-
+        if (file.shareExpiry && file.shareExpiry < new Date()) {
             return res.status(410).json({
                 success: false,
                 message: "This share link has expired.",
             });
-
         }
 
         if (file.sharePassword) {
@@ -146,10 +117,7 @@ const getSharedFile = async (req, res) => {
                 });
             }
 
-            const valid = await bcrypt.compare(
-                password,
-                file.sharePassword
-            );
+            const valid = await bcrypt.compare(password, file.sharePassword);
 
             if (!valid) {
                 return res.status(401).json({
@@ -159,24 +127,26 @@ const getSharedFile = async (req, res) => {
             }
         }
 
+        // Handle Burn After Download logic
+        file.downloadCount = (file.downloadCount || 0) + 1;
+        if (file.burnAfterDownload) {
+            file.isPublic = false;
+            file.shareToken = null;
+            file.shareExpiry = null;
+            file.sharePassword = null;
+            file.burnAfterDownload = false;
+        }
+        await file.save();
+
         const filePath = path.resolve(file.path);
-
-        res.download(
-            filePath,
-            file.originalName
-        );
-
+        res.download(filePath, file.originalName);
     } catch (error) {
-
         console.error(error);
-
         res.status(500).json({
             success: false,
             message: "Unable to download shared file.",
         });
-
     }
-
 };
 
 const disableShare = async (req, res) => {
@@ -253,7 +223,9 @@ const getShareInfo = async (req, res) => {
                 originalName: file.originalName,
                 size: file.size,
                 mimeType: file.mimeType,
-                requiresPassword: !!file.sharePassword
+                requiresPassword: !!file.sharePassword,
+                burnAfterDownload: Boolean(file.burnAfterDownload),
+                shareExpiry: file.shareExpiry,
             },
         });
     } catch (error) {
@@ -267,16 +239,14 @@ const getShareInfo = async (req, res) => {
 };
 
 const getSharedFiles = async (req, res) => {
-
     try {
-
         const files = await File.find({
             owner: req.user.id,
             isPublic: true,
             isDeleted: false,
         })
             .select(
-                "originalName mimeType size shareToken shareExpiry sharePassword createdAt"
+                "originalName mimeType size shareToken shareExpiry sharePassword burnAfterDownload createdAt"
             )
             .sort({
                 createdAt: -1,

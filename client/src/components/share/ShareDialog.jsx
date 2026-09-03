@@ -39,6 +39,7 @@ function ShareDialog({
 }) {
     const [expiry, setExpiry] = useState("never");
     const [password, setPassword] = useState("");
+    const [burnAfterDownload, setBurnAfterDownload] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -46,6 +47,7 @@ function ShareDialog({
         if (!open) {
             setExpiry("never");
             setPassword("");
+            setBurnAfterDownload(false);
             setShowPassword(false);
             setCopied(false);
         }
@@ -82,10 +84,10 @@ function ShareDialog({
                     </Avatar>
                     <Box>
                         <Typography variant="subtitle1" fontWeight={800} color="#0F172A">
-                            Share File Link
+                            Smart Share Hub
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                            Create public access with optional passwords and limits
+                            Create secure links with auto-destruction, expiration & encryption
                         </Typography>
                     </Box>
                 </Box>
@@ -93,11 +95,48 @@ function ShareDialog({
 
             <DialogContent sx={{ pt: 1, pb: 1 }}>
                 <Stack spacing={2.25} sx={{ mt: 0.75 }}>
+                    {/* Burn after download switch */}
+                    <Box
+                        sx={{
+                            p: 1.75,
+                            borderRadius: "12px",
+                            bgcolor: burnAfterDownload ? "#FFF1F2" : "#F8FAFC",
+                            border: `1px solid ${burnAfterDownload ? "#FECDD3" : "#E2E8F0"}`,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                            <Typography fontSize="1.3rem">🔥</Typography>
+                            <Box>
+                                <Typography variant="subtitle2" fontWeight={700} color={burnAfterDownload ? "#9F1239" : "#0F172A"} fontSize="0.86rem">
+                                    Burn After Download
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary" fontSize="0.72rem" display="block">
+                                    Link permanently self-destructs after 1 successful download.
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <Button
+                            size="small"
+                            variant={burnAfterDownload ? "contained" : "outlined"}
+                            color={burnAfterDownload ? "error" : "inherit"}
+                            onClick={() => setBurnAfterDownload(!burnAfterDownload)}
+                            sx={{ borderRadius: "8px", fontWeight: 700, textTransform: "none", fontSize: "0.78rem" }}
+                        >
+                            {burnAfterDownload ? "Enabled" : "Enable"}
+                        </Button>
+                    </Box>
+
+                    {/* Expiry */}
                     <Box>
                         <Box display="flex" alignItems="center" gap={0.75} mb={0.75}>
                             <AccessTimeRoundedIcon sx={{ fontSize: 16, color: "#4F46E5" }} />
                             <Typography variant="caption" fontWeight={700} color="#1E293B" fontSize="0.82rem">
-                                Link Expiry
+                                Link Expiration
                             </Typography>
                         </Box>
                         <FormControl fullWidth size="small">
@@ -121,14 +160,16 @@ function ShareDialog({
                                 }}
                             >
                                 <MenuItem value="never">Never (Persistent)</MenuItem>
+                                <MenuItem value="10m">⚡ 10 Minutes (Self-Destruct)</MenuItem>
                                 <MenuItem value="1h">1 Hour</MenuItem>
-                                <MenuItem value="24h">24 Hours</MenuItem>
+                                <MenuItem value="24h">24 Hours (1 Day)</MenuItem>
                                 <MenuItem value="7d">7 Days</MenuItem>
                                 <MenuItem value="30d">30 Days</MenuItem>
                             </Select>
                         </FormControl>
                     </Box>
 
+                    {/* Password */}
                     <Box>
                         <Box display="flex" alignItems="center" gap={0.75} mb={0.75}>
                             <LockOutlinedIcon sx={{ fontSize: 16, color: "#64748B" }} />
@@ -181,11 +222,12 @@ function ShareDialog({
 
                     <Button
                         variant="contained"
-                        onClick={() => onGenerate(expiry, password)}
+                        onClick={() => onGenerate(expiry, password, burnAfterDownload)}
                         sx={{
                             borderRadius: "10px",
                             fontWeight: 700,
                             py: 1.1,
+                            textTransform: "none",
                             background: "linear-gradient(135deg, #4F46E5 0%, #0284C7 100%)",
                             boxShadow: "0 4px 12px rgba(79, 70, 229, 0.25)",
                             "&:hover": {

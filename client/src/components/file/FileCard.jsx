@@ -101,8 +101,17 @@ function FileCard({
     onProperties,
     onFavorite,
     onShare,
+    onStudio,
+    onEdit,
 }) {
     const [isHovered, setIsHovered] = useState(false);
+
+    const extLower = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
+    const isImage = ["png", "jpg", "jpeg", "webp", "gif", "bmp"].includes(extLower);
+    const isTextOrCode = [
+        "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+        "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+    ].includes(extLower);
 
     const extension = file.originalName
         ? file.originalName.split(".").pop().toUpperCase()
@@ -236,6 +245,8 @@ function FileCard({
                         <ActionMenu
                             items={[
                                 { label: "Preview", onClick: () => onOpen(file) },
+                                ...(isImage && onStudio ? [{ label: "Image Studio", onClick: () => onStudio(file) }] : []),
+                                ...(isTextOrCode && onEdit ? [{ label: "Edit File", onClick: () => onEdit(file) }] : []),
                                 { label: "Download", onClick: () => onDownload(file) },
                                 { label: "Rename", onClick: () => onRename(file) },
                                 {
@@ -353,6 +364,8 @@ function FileCard({
                         <ActionMenu
                             items={[
                                 { label: "Preview", onClick: () => onOpen(file) },
+                                ...(isImage && onStudio ? [{ label: "Image Studio", onClick: () => onStudio(file) }] : []),
+                                ...(isTextOrCode && onEdit ? [{ label: "Edit File", onClick: () => onEdit(file) }] : []),
                                 { label: "Download", onClick: () => onDownload(file) },
                                 { label: "Rename", onClick: () => onRename(file) },
                                 {

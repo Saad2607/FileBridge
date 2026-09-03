@@ -59,6 +59,8 @@ import FilePreviewDialog from "../preview/FilePreviewDialog";
 import DesktopSyncHub from "../desktop/DesktopSyncHub";
 import WebDesktopBanner from "../web/WebDesktopBanner";
 import MultiSelectToolbar from "../common/MultiSelectToolbar";
+import ImageStudioDialog from "../studio/ImageStudioDialog";
+import CodeEditorDialog from "../studio/CodeEditorDialog";
 
 function MainContent() {
     const navigate = useNavigate();
@@ -111,6 +113,12 @@ function MainContent() {
 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewFile, setPreviewFile] = useState(null);
+
+    const [imageStudioOpen, setImageStudioOpen] = useState(false);
+    const [studioFile, setStudioFile] = useState(null);
+
+    const [codeEditorOpen, setCodeEditorOpen] = useState(false);
+    const [editorFile, setEditorFile] = useState(null);
 
     // Multi-Select State
     const [selectedFolderIds, setSelectedFolderIds] = useState([]);
@@ -302,12 +310,13 @@ function MainContent() {
         setShareDialogOpen(true);
     };
 
-    const generateShareLink = async (expiry, password) => {
+    const generateShareLink = async (expiry, password, burnAfterDownload) => {
         try {
             const data = await createShareLink(
                 selectedShareFile._id,
                 expiry,
-                password
+                password,
+                burnAfterDownload
             );
             setShareLink(data.shareUrl);
             toast.success("Share link generated!");
@@ -652,6 +661,14 @@ function MainContent() {
                                     onProperties={handleFileProperties}
                                     onFavorite={handleFavoriteFile}
                                     onShare={handleShare}
+                                    onStudio={(f) => {
+                                        setStudioFile(f);
+                                        setImageStudioOpen(true);
+                                    }}
+                                    onEdit={(f) => {
+                                        setEditorFile(f);
+                                        setCodeEditorOpen(true);
+                                    }}
                                 />
                             )}
                         </Box>
@@ -781,6 +798,14 @@ function MainContent() {
                         setPreviewFile(null);
                     }}
                     onDownload={handleDownload}
+                    onStudio={(f) => {
+                        setStudioFile(f);
+                        setImageStudioOpen(true);
+                    }}
+                    onEdit={(f) => {
+                        setEditorFile(f);
+                        setCodeEditorOpen(true);
+                    }}
                 />
 
                 <ShareDialog
@@ -793,6 +818,28 @@ function MainContent() {
                     }}
                     onGenerate={generateShareLink}
                     onDisable={handleDisableShare}
+                />
+
+                {/* In-Browser Image Studio & Transformer */}
+                <ImageStudioDialog
+                    open={imageStudioOpen}
+                    file={studioFile}
+                    onClose={() => {
+                        setImageStudioOpen(false);
+                        setStudioFile(null);
+                    }}
+                    onFileSaved={loadContent}
+                />
+
+                {/* Cloud Code & Text Editor */}
+                <CodeEditorDialog
+                    open={codeEditorOpen}
+                    file={editorFile}
+                    onClose={() => {
+                        setCodeEditorOpen(false);
+                        setEditorFile(null);
+                    }}
+                    onFileSaved={loadContent}
                 />
             </Box>
         </DragDropZone>

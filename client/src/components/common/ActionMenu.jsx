@@ -18,6 +18,9 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 
+import AutoFixHighRoundedIcon from "@mui/icons-material/AutoFixHighRounded";
+import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
+
 function ActionMenu({ items = [] }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -32,9 +35,16 @@ function ActionMenu({ items = [] }) {
         setAnchorEl(null);
     };
 
-    const getIcon = (label) => {
+    const getIcon = (item) => {
+        if (item.icon) return item.icon;
+        const label = item.label || "";
+
         if (label.includes("Preview"))
             return <VisibilityRoundedIcon fontSize="small" sx={{ color: "#1976D2" }} />;
+        if (label.includes("Studio"))
+            return <AutoFixHighRoundedIcon fontSize="small" sx={{ color: "#0D9488" }} />;
+        if (label.includes("Edit"))
+            return <EditNoteRoundedIcon fontSize="small" sx={{ color: "#4F46E5" }} />;
         if (label.includes("Download"))
             return <DownloadRoundedIcon fontSize="small" sx={{ color: "#0284C7" }} />;
         if (label.includes("Rename"))
@@ -107,7 +117,7 @@ function ActionMenu({ items = [] }) {
                                 }}
                             >
                                 <ListItemIcon sx={{ minWidth: 30 }}>
-                                    {getIcon(item.label)}
+                                    {getIcon(item)}
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={item.label}

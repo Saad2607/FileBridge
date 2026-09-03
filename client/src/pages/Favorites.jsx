@@ -395,9 +395,9 @@ function Favorites() {
                     setShareLink("");
                     setSelectedShareFile(null);
                 }}
-                onGenerate={async (expiry, password) => {
+                onGenerate={async (expiry, password, burnAfterDownload) => {
                     try {
-                        const data = await createShareLink(selectedShareFile._id, expiry, password);
+                        const data = await createShareLink(selectedShareFile._id, expiry, password, burnAfterDownload);
                         setShareLink(data.shareUrl);
                         toast.success("Share link generated!");
                     } catch (err) {

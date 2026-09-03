@@ -101,12 +101,52 @@ const downloadFile = async (req, res) => {
             targetName: file.originalName,
         });
 
-        const filePath = path.resolve(file.path);
+        const candidatePaths = [
+            file.path ? path.resolve(file.path) : null,
+            file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
+            file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("server/uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("uploads", file.storedName) : null,
+            file.path ? path.join(__dirname, "..", file.path) : null,
+            file.path ? path.join(__dirname, "../..", file.path) : null,
+        ].filter(Boolean);
 
-        res.download(
-            filePath,
-            file.originalName
-        );
+        for (const p of candidatePaths) {
+            if (fs.existsSync(p)) {
+                return res.download(p, file.originalName);
+            }
+        }
+
+        if (file.url) {
+            return res.redirect(file.url);
+        }
+
+        // If it is a text/code document, initialize it on disk so the user can immediately edit and save
+        const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
+        const isTextOrCode = (file.mimeType && file.mimeType.startsWith("text/")) || [
+            "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+            "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+        ].includes(ext);
+
+        if (isTextOrCode) {
+            const uploadDir = path.resolve(__dirname, "../uploads/files");
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const fallbackPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+            if (!fs.existsSync(fallbackPath)) {
+                fs.writeFileSync(fallbackPath, "", "utf8");
+            }
+            file.path = fallbackPath;
+            await file.save();
+            return res.download(fallbackPath, file.originalName);
+        }
+
+        return res.status(404).json({
+            success: false,
+            message: "File asset not found on disk.",
+        });
     } catch (error) {
         console.error(error);
 
@@ -300,6 +340,31 @@ const previewFile = async (req, res) => {
             }
         }
 
+        if (file.url) {
+            return res.redirect(file.url);
+        }
+
+        // If it is a text/code document, initialize empty file on disk and send
+        const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
+        const isTextOrCode = (file.mimeType && file.mimeType.startsWith("text/")) || [
+            "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+            "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+        ].includes(ext);
+
+        if (isTextOrCode) {
+            const uploadDir = path.resolve(__dirname, "../uploads/files");
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            const fallbackPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+            if (!fs.existsSync(fallbackPath)) {
+                fs.writeFileSync(fallbackPath, "", "utf8");
+            }
+            file.path = fallbackPath;
+            await file.save();
+            return res.sendFile(fallbackPath);
+        }
+
         return res.status(404).json({
             success: false,
             message: "File asset not found on storage disk.",
@@ -313,4 +378,82 @@ const previewFile = async (req, res) => {
     }
 };
 
-module.exports = { uploadFile, getFiles, downloadFile, deleteFile, renameFile, toggleFavoriteFile, previewFile };
+const updateFileContent = async (req, res) => {
+    try {
+        const { content } = req.body;
+
+        if (typeof content !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "Content string is required.",
+            });
+        }
+
+        const file = await File.findOne({
+            _id: req.params.id,
+            owner: req.user.id,
+            isDeleted: false,
+        });
+
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                message: "File not found.",
+            });
+        }
+
+        const candidatePaths = [
+            file.path ? path.resolve(file.path) : null,
+            file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
+            file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("uploads", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../../uploads/files", file.storedName) : null,
+        ].filter(Boolean);
+
+        let targetPath = null;
+        for (const p of candidatePaths) {
+            if (fs.existsSync(p)) {
+                targetPath = p;
+                break;
+            }
+        }
+
+        if (!targetPath) {
+            // If path doesn't exist, create it in uploads/files
+            const uploadDir = path.resolve(__dirname, "../uploads/files");
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            targetPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+            file.path = targetPath;
+        }
+
+        fs.writeFileSync(targetPath, content, "utf8");
+        file.size = Buffer.byteLength(content, "utf8");
+        await file.save();
+
+        logUserActivity({
+            user: req.user.id,
+            action: "EDIT_FILE",
+            targetType: "file",
+            targetId: file._id,
+            targetName: file.originalName,
+            metadata: { newSize: file.size },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "File content updated successfully.",
+            file,
+        });
+    } catch (error) {
+        console.error("Update content error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Unable to update file content.",
+        });
+    }
+};
+
+module.exports = { uploadFile, getFiles, downloadFile, deleteFile, renameFile, toggleFavoriteFile, previewFile, updateFileContent };

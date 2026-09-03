@@ -25,6 +25,8 @@ function FilePreviewDialog({
     fileUrl: explicitFileUrl,
     onClose,
     onDownload,
+    onStudio,
+    onEdit,
 }) {
     if (!file) return null;
 
@@ -34,8 +36,13 @@ function FilePreviewDialog({
         ? file.originalName.split(".").pop().toLowerCase()
         : "";
 
+    const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp"].includes(extension);
+    const isTextOrCode = [
+        "txt", "json", "js", "jsx", "ts", "tsx", "css", "html", "md", "csv", "xml", "sql", "env", "yaml", "yml", "py"
+    ].includes(extension);
+
     const renderPreview = () => {
-        if (["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp"].includes(extension)) {
+        if (isImage) {
             return <ImagePreview fileUrl={fileUrl} />;
         }
 
@@ -106,26 +113,8 @@ function FilePreviewDialog({
             );
         }
 
-        if (
-            [
-                "txt",
-                "json",
-                "js",
-                "jsx",
-                "ts",
-                "tsx",
-                "css",
-                "html",
-                "md",
-                "csv",
-                "xml",
-                "sql",
-                "env",
-                "yaml",
-                "yml",
-            ].includes(extension)
-        ) {
-            return <TextPreview fileUrl={fileUrl} />;
+        if (isTextOrCode) {
+            return <TextPreview fileUrl={fileUrl} fileId={file._id || file.id} />;
         }
 
         return (
@@ -211,14 +200,41 @@ function FilePreviewDialog({
                     Created: {new Date(file.createdAt || Date.now()).toLocaleDateString()}
                 </Typography>
 
-                <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button onClick={onClose} sx={{ fontWeight: 600, color: "#64748B" }}>Close</Button>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {isImage && onStudio && (
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                onClose();
+                                onStudio(file);
+                            }}
+                            sx={{ borderRadius: "8px", fontWeight: 700, color: "#4F46E5", borderColor: "#C7D2FE", textTransform: "none" }}
+                        >
+                            Open in Studio
+                        </Button>
+                    )}
+
+                    {isTextOrCode && onEdit && (
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                onClose();
+                                onEdit(file);
+                            }}
+                            sx={{ borderRadius: "8px", fontWeight: 700, color: "#4F46E5", borderColor: "#C7D2FE", textTransform: "none" }}
+                        >
+                            Edit File
+                        </Button>
+                    )}
+
+                    <Button onClick={onClose} sx={{ fontWeight: 600, color: "#64748B", textTransform: "none" }}>Close</Button>
+
                     {onDownload && (
                         <Button
                             variant="contained"
                             startIcon={<DownloadRoundedIcon />}
                             onClick={() => onDownload(file)}
-                            sx={{ borderRadius: "8px", fontWeight: 700 }}
+                            sx={{ borderRadius: "8px", fontWeight: 700, textTransform: "none" }}
                         >
                             Download
                         </Button>

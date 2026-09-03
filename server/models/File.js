@@ -71,6 +71,14 @@ const fileSchema = new mongoose.Schema(
         sharePassword: {
             type: String,
             default: null,
+        },
+        burnAfterDownload: {
+            type: Boolean,
+            default: false,
+        },
+        downloadCount: {
+            type: Number,
+            default: 0,
         }
     },
     {

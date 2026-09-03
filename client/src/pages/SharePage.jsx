@@ -265,10 +265,36 @@ function SharePage() {
                             {file.originalName}
                         </Typography>
 
-                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1, mb: 3 }}>
+                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1, mb: 3, flexWrap: "wrap", justifyContent: "center" }}>
                             <Chip label={getFileTypeLabel(file.mimeType)} size="small" variant="outlined" sx={{ fontWeight: 600 }} />
                             <Chip label={formatFileSize(file.size)} size="small" color="primary" sx={{ fontWeight: 700 }} />
+                            {file.burnAfterDownload && (
+                                <Chip
+                                    label="🔥 Burn on Download"
+                                    size="small"
+                                    color="error"
+                                    sx={{ fontWeight: 700, bgcolor: "#FFE4E6", color: "#E11D48", border: "1px solid #FECDD3" }}
+                                />
+                            )}
                         </Box>
+
+                        {file.burnAfterDownload && (
+                            <Box
+                                sx={{
+                                    width: "100%",
+                                    p: 1.25,
+                                    mb: 2.5,
+                                    borderRadius: "8px",
+                                    bgcolor: "#FFF1F2",
+                                    border: "1px solid #FECDD3",
+                                    textAlign: "center",
+                                }}
+                            >
+                                <Typography variant="caption" color="#9F1239" fontWeight={700}>
+                                    ⚠️ Single-Use Link: This file will automatically self-destruct once downloaded.
+                                </Typography>
+                            </Box>
+                        )}
 
                         {file.requiresPassword && (
                             <Box width="100%" sx={{ mb: 2.75 }} textAlign="left">

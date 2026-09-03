@@ -13,6 +13,8 @@ function FileGrid({
     onProperties,
     onFavorite,
     onShare,
+    onStudio,
+    onEdit,
 }) {
     if (!files || files.length === 0) {
         return null;
@@ -43,6 +45,8 @@ function FileGrid({
                         onProperties={onProperties}
                         onFavorite={onFavorite}
                         onShare={onShare}
+                        onStudio={onStudio}
+                        onEdit={onEdit}
                     />
                 </Grid>
             ))}

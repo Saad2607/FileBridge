@@ -112,39 +112,54 @@ export const renameFile = async (
 };
 
 export const toggleFavoriteFile = async (id) => {
-
     const response = await api.patch(
         `/files/favorite/${id}`
     );
-
     return response.data;
+};
 
+export const getFileBlob = async (fileId) => {
+    const response = await api.get(`/files/download/${fileId}`, {
+        responseType: "blob",
+    });
+    return response.data;
+};
+
+export const getFileText = async (fileId) => {
+    const response = await api.get(`/files/download/${fileId}`, {
+        responseType: "text",
+        transformResponse: [(data) => data],
+    });
+    return response.data;
+};
+
+export const updateFileContent = async (id, content) => {
+    const { data } = await api.put(`/files/${id}/content`, { content });
+    return data;
 };
 
 export const createShareLink = async (
     id,
     expiry = "never",
-    password = ""
+    password = "",
+    burnAfterDownload = false
 ) => {
-
     const { data } = await api.post(
         `/share/${id}`,
         {
             expiry,
             password,
+            burnAfterDownload,
         }
     );
 
     return data;
-
 };
 
 export const disableShare = async (id) => {
-
     const { data } = await api.patch(
         `/share/${id}/disable`
     );
 
     return data;
-
 };
