@@ -350,9 +350,28 @@ function Register() {
 
                                 {/* Password */}
                                 <Box mb={3.5}>
-                                    <Typography variant="caption" fontWeight={700} color="text.secondary" mb={0.5} display="block" fontSize="0.72rem">
-                                        PASSWORD
-                                    </Typography>
+                                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.75}>
+                                        <Typography variant="caption" fontWeight={700} color="text.secondary" display="block" fontSize="0.72rem">
+                                            PASSWORD
+                                        </Typography>
+                                        <Button
+                                            type="button"
+                                            size="small"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            startIcon={showPassword ? <VisibilityOff sx={{ fontSize: "16px !important" }} /> : <Visibility sx={{ fontSize: "16px !important" }} />}
+                                            sx={{
+                                                p: 0,
+                                                minWidth: "auto",
+                                                textTransform: "none",
+                                                fontSize: "0.78rem",
+                                                fontWeight: 700,
+                                                color: "#4F46E5",
+                                                "&:hover": { bgcolor: "transparent", textDecoration: "underline" },
+                                            }}
+                                        >
+                                            {showPassword ? "Hide Password" : "Show Password"}
+                                        </Button>
+                                    </Box>
                                     <TextField
                                         fullWidth
                                         size="small"
@@ -370,6 +389,31 @@ function Register() {
                                                 "&.Mui-focused fieldset": { borderColor: "#4F46E5" },
                                             },
                                         }}
+                                        slotProps={{
+                                            input: {
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <LockOutlinedIcon sx={{ fontSize: 18, color: "#94A3B8" }} />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <Tooltip title={showPassword ? "Hide password" : "Show password"} arrow placement="top">
+                                                            <IconButton
+                                                                type="button"
+                                                                onClick={() => setShowPassword(!showPassword)}
+                                                                edge="end"
+                                                                size="small"
+                                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                                                sx={{ color: "#4F46E5", p: 0.75 }}
+                                                            >
+                                                                {showPassword ? <VisibilityOff sx={{ fontSize: 19 }} /> : <Visibility sx={{ fontSize: 19 }} />}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </InputAdornment>
+                                                ),
+                                            },
+                                        }}
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -380,13 +424,14 @@ function Register() {
                                                 <InputAdornment position="end">
                                                     <Tooltip title={showPassword ? "Hide password" : "Show password"} arrow placement="top">
                                                         <IconButton
+                                                            type="button"
                                                             onClick={() => setShowPassword(!showPassword)}
                                                             edge="end"
                                                             size="small"
                                                             aria-label={showPassword ? "Hide password" : "Show password"}
-                                                            sx={{ color: "#64748B", "&:hover": { color: "#4F46E5" } }}
+                                                            sx={{ color: "#4F46E5", p: 0.75 }}
                                                         >
-                                                            {showPassword ? <VisibilityOff sx={{ fontSize: 18 }} /> : <Visibility sx={{ fontSize: 18 }} />}
+                                                            {showPassword ? <VisibilityOff sx={{ fontSize: 19 }} /> : <Visibility sx={{ fontSize: 19 }} />}
                                                         </IconButton>
                                                     </Tooltip>
                                                 </InputAdornment>
