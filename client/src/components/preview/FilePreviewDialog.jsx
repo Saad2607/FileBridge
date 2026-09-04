@@ -114,7 +114,7 @@ function FilePreviewDialog({
         }
 
         if (isTextOrCode) {
-            return <TextPreview fileUrl={fileUrl} fileId={file._id || file.id} />;
+            return <TextPreview fileUrl={fileUrl} fileId={file._id || file.id} file={file} />;
         }
 
         return (
@@ -145,7 +145,7 @@ function FilePreviewDialog({
             open={open}
             onClose={onClose}
             fullWidth
-            maxWidth="md"
+            maxWidth={isTextOrCode ? "lg" : "md"}
             PaperProps={{
                 sx: {
                     borderRadius: "16px",

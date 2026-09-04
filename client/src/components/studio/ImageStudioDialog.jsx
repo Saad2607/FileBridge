@@ -378,8 +378,23 @@ function ImageStudioDialog({ open, file, onClose, onFileSaved }) {
                             }}
                         >
                             {loadingImage || processing ? (
-                                <Box display="flex" flexDirection="column" alignItems="center" gap={1.5}>
-                                    <CircularProgress sx={{ color: "#38BDF8" }} size={36} />
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        transform: "translate(-50%, -50%)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 1.5,
+                                        zIndex: 2,
+                                        textAlign: "center",
+                                        width: "100%",
+                                    }}
+                                >
+                                    <CircularProgress sx={{ color: "#38BDF8" }} size={38} />
                                     <Typography variant="caption" color="#94A3B8" fontWeight={600}>
                                         {loadingImage ? "Loading image asset..." : "Applying transformations..."}
                                     </Typography>
@@ -458,19 +473,42 @@ function ImageStudioDialog({ open, file, onClose, onFileSaved }) {
                     <Grid size={{ xs: 12, md: 5 }}>
                         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                             {/* Format Selection */}
-                            <FormControl size="small" fullWidth>
-                                <InputLabel>Target Format</InputLabel>
-                                <Select
-                                    value={format}
-                                    label="Target Format"
-                                    onChange={(e) => setFormat(e.target.value)}
-                                    sx={{ borderRadius: "8px", bgcolor: "#FFFFFF" }}
+                            <Box>
+                                <Typography
+                                    variant="caption"
+                                    fontWeight={700}
+                                    color="text.secondary"
+                                    display="block"
+                                    sx={{ mb: 0.75, letterSpacing: "0.5px", fontSize: "0.75rem" }}
                                 >
-                                    <MenuItem value="webp">WebP (Modern, high compression)</MenuItem>
-                                    <MenuItem value="jpeg">JPEG (Universal compatibility)</MenuItem>
-                                    <MenuItem value="png">PNG (Lossless, transparency)</MenuItem>
+                                    TARGET FORMAT
+                                </Typography>
+                                <Select
+                                    size="small"
+                                    fullWidth
+                                    value={format}
+                                    onChange={(e) => setFormat(e.target.value)}
+                                    sx={{
+                                        borderRadius: "8px",
+                                        bgcolor: "#FFFFFF",
+                                        "& .MuiSelect-select": {
+                                            fontWeight: 600,
+                                            color: "#1E293B",
+                                            py: 1,
+                                        },
+                                        "& .MuiOutlinedInput-notchedOutline": {
+                                            borderColor: "#CBD5E1",
+                                        },
+                                        "&:hover .MuiOutlinedInput-notchedOutline": {
+                                            borderColor: "#4F46E5",
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value="webp" sx={{ fontWeight: 600, py: 1 }}>WebP (Modern, high compression)</MenuItem>
+                                    <MenuItem value="jpeg" sx={{ fontWeight: 600, py: 1 }}>JPEG (Universal compatibility)</MenuItem>
+                                    <MenuItem value="png" sx={{ fontWeight: 600, py: 1 }}>PNG (Lossless, transparency)</MenuItem>
                                 </Select>
-                            </FormControl>
+                            </Box>
 
                             {/* Quality Slider (hidden on PNG) */}
                             {format !== "png" && (
