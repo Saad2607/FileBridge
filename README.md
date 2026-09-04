@@ -38,6 +38,22 @@ Designed with an **Electric Indigo (`#4F46E5`) & Sky Blue (`#0284C7`)** SaaS des
   - Live statistics: Line count, Word count, and Character count.
   - Keyboard shortcuts (`Ctrl + S` / `Cmd + S` to save directly to cloud storage).
 
+### 🏷️ Custom Color Tags & Smart Labels
+- **Dynamic Tag Assignment**: Assign custom color-coded labels (Indigo, Emerald, Amber, Rose, Purple, Cyan, Pink, Slate) to any file.
+- **Batch Tagging**: Select multiple files and apply or remove tags in a single operation via the floating action bar.
+- **Tag Filtering & Visual Badges**: Filter files by specific tags and view responsive tag chips directly on file cards and table rows.
+- **Context Menu Integration**: Dedicated "Manage Tags" action with custom tag icon in the 3-dots action menu.
+
+### 🔍 Full-Text Deep Search
+- **Universal Query Engine**: Search across file names, custom color tags, and internal code/text contents.
+- **Contextual Match Snippets**: Displays matched code or text snippets directly under search results with line highlighting.
+- **Automated Text Indexing**: Background storage synchronization automatically indexes `.html`, `.js`, `.py`, `.json`, `.md`, `.css`, and `.txt` files for instant full-text lookups.
+
+### 📜 File Revision History & Version Control
+- **Automatic Revision Snapshots**: Captures revision history on every code editor save with timestamps, author details, and custom commit comments.
+- **Docked Revision Drawer**: Sleek side-by-side version inspection panel integrated directly into the Cloud Code IDE.
+- **One-Click Rollback**: Restore any previous historical version snapshot with automatic local disk cache and database synchronization.
+
 ### ⚡ Smart Share Hub (Secure & Self-Destructing Links)
 - **🔥 Burn After Download**: Create one-time links that automatically self-destruct and revoke access permanently after a single download.
 - **Granular Expiration**: Set link lifetimes (`10m` self-destruct, `1h`, `24h`, `7d`, `30d`, or `Never`).
@@ -55,8 +71,8 @@ Designed with an **Electric Indigo (`#4F46E5`) & Sky Blue (`#0284C7`)** SaaS des
 - **Dual View Modes**: Switch seamlessly between **Grid View** and **List/Table View**.
 - **MIME-Based Badges**: Smart color-coded icons and tags for Images, PDFs, Videos, Audio, Archives, and Code.
 - **Drag & Drop Uploads**: Fluid multi-file upload drop zone with floating progress tracker.
-- **Multi-Selection & Batch Actions**: Batch favorite or batch move items to Recycle Bin with a floating action capsule.
-- **Quick Actions Menu**: Instant preview, edit in studio, download, rename, star, share, and delete directly from the context menu.
+- **Multi-Selection & Batch Actions**: Batch favorite, batch tag, or batch move items to Recycle Bin with a floating action capsule.
+- **Quick Actions Menu**: Instant preview, studio edit, manage tags, download, rename, star, share, and delete directly from the context menu.
 
 ### 👁️ Instant In-App File Previews
 - **Images**: High-resolution viewer with direct "Open in Studio" action.
@@ -68,7 +84,7 @@ Designed with an **Electric Indigo (`#4F46E5`) & Sky Blue (`#0284C7`)** SaaS des
 - **Live Storage Quota Bar**: Visual breakdown of storage consumption against tier limits.
 - **File Type Distribution**: Interactive file category analytics and storage allocation meters.
 - **Largest Files Analyzer**: Rapidly identify and manage storage-heavy files.
-- **Activity Feed**: Comprehensive audit trail of uploads, downloads, edits, renames, and deletions.
+- **Activity Feed**: Comprehensive audit trail of uploads, downloads, edits, tag updates, version rollbacks, renames, and deletions.
 
 ### ♻️ Safe Two-Step Deletion (Recycle Bin)
 - **Soft Deletion**: Accidental deletions move items to the Recycle Bin with cascade guards.
@@ -101,7 +117,7 @@ FileBridge/
 │   ├── public/                 # Static assets & modern cloud favicon
 │   ├── src/
 │   │   ├── components/         # Modular UI Components
-│   │   │   ├── common/         # ActionMenu, Dialogs, Toolbars, SearchBar
+│   │   │   ├── common/         # ActionMenu, TagManagerDialog, Dialogs, Toolbars, SearchBar
 │   │   │   ├── dashboard/      # Overview, QuickActions, RecentActivity, Storage
 │   │   │   ├── desktop/        # Frameless DesktopTitlebar, DesktopSyncHub
 │   │   │   ├── file/           # FileCard, FileGrid, FileUpload
@@ -110,12 +126,12 @@ FileBridge/
 │   │   │   ├── preview/        # FilePreviewDialog, Image/Pdf/Text Previewers
 │   │   │   ├── recycleBin/     # RecycleFileCard, RecycleFolderCard
 │   │   │   ├── share/          # ShareDialog, SharedFileCard
-│   │   │   ├── studio/         # ImageStudioDialog, CodeEditorDialog
+│   │   │   ├── studio/         # ImageStudioDialog, CodeEditorDialog, VersionHistoryDrawer
 │   │   │   └── upload/         # DragDropZone, UploadProgress
 │   │   ├── constants/          # Application route definitions
 │   │   ├── context/            # AuthContext, FolderContext, UploadContext
 │   │   ├── pages/              # Splash, Login, Dashboard, Statistics, Favorites, SharedFiles, RecycleBin, Settings, SharePage
-│   │   ├── services/           # Axios API service layer (auth, file, folder, share, etc.)
+│   │   ├── services/           # Axios API service layer (auth, file, folder, share, activity, search)
 │   │   ├── styles/             # Global CSS & Tailwind configuration
 │   │   ├── theme/              # MUI custom palette & typography
 │   │   └── utils/              # Storage helpers, file formatters, URL resolvers
@@ -123,13 +139,13 @@ FileBridge/
 │
 ├── server/                     # Node.js + Express REST API
 │   ├── config/                 # MongoDB connection setup
-│   ├── controllers/            # Controller logic (Auth, File, Folder, Share, RecycleBin, Dashboard)
+│   ├── controllers/            # Controller logic (Auth, File, Folder, Share, RecycleBin, Dashboard, Search, Activity)
 │   ├── middleware/             # JWT auth & Multer upload middleware
 │   ├── models/                 # Mongoose schemas (User, File, Folder, Activity)
 │   ├── routes/                 # Express API route declarations
 │   ├── seed/                   # Database seed scripts
 │   ├── uploads/                # Local file storage repository
-│   ├── utils/                  # Activity logger & helper utilities
+│   ├── utils/                  # Activity logger, storage sync & helper utilities
 │   ├── app.js                  # Express app configuration
 │   ├── server.js               # Entrypoint listener
 │   └── package.json
@@ -247,13 +263,19 @@ npm run build:client
 | `GET` | `/api/files/download/:id` | Download file / binary stream by ID | Yes |
 | `GET` | `/api/files/preview/:id` | Direct in-browser stream with CORS headers | No |
 | `PUT` | `/api/files/:id/content` | Update & save code/text file content | Yes |
+| `PATCH` | `/api/files/:id/tags` | Update custom color tags for a file | Yes |
+| `POST` | `/api/files/batch-tags` | Batch assign or remove tags on multiple files | Yes |
+| `GET` | `/api/files/:id/versions` | Retrieve revision history & snapshots | Yes |
+| `POST` | `/api/files/:id/versions/:versionId/restore` | Restore historical version snapshot | Yes |
 | `PUT` | `/api/files/:id` | Rename file | Yes |
 | `DELETE` | `/api/files/:id` | Move file to Recycle Bin | Yes |
+| `GET` | `/api/search` | Full-text deep search across files, tags & text content | Yes |
 | `POST` | `/api/share/:id` | Generate secure public share link (with burn & expiry) | Yes |
 | `GET` | `/api/share/:token` | Retrieve public file metadata & burn status | No |
 | `GET` | `/api/share/:token/download` | Download shared file (with password validation & burn auto-destruct) | No |
 | `GET` | `/api/dashboard/stats` | Retrieve aggregate storage & file metrics | Yes |
 | `GET` | `/api/dashboard/analytics` | Retrieve MIME-type distribution & largest files | Yes |
+| `GET` | `/api/activities` | Retrieve recent activity feed audit trail | Yes |
 | `GET` | `/api/recycle-bin/files` | Retrieve deleted files | Yes |
 | `GET` | `/api/recycle-bin/folders` | Retrieve deleted folders | Yes |
 | `PATCH` | `/api/recycle-bin/files/:id/restore` | Restore file from Recycle Bin | Yes |
