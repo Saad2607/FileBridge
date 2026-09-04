@@ -25,6 +25,8 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
+import FindInPageRoundedIcon from "@mui/icons-material/FindInPageRounded";
 
 import ActionMenu from "../common/ActionMenu";
 import { formatFileSize } from "../../utils/fileHelpers";
@@ -103,6 +105,7 @@ function FileCard({
     onShare,
     onStudio,
     onEdit,
+    onManageTags,
 }) {
     const [isHovered, setIsHovered] = useState(false);
 
@@ -118,6 +121,23 @@ function FileCard({
         : "FILE";
 
     const styleConfig = getFileStyle(file.originalName);
+    const tags = Array.isArray(file.tags) ? file.tags : [];
+
+    const actionMenuItems = [
+        { label: "Preview", onClick: () => onOpen(file) },
+        ...(isImage && onStudio ? [{ label: "Image Studio", onClick: () => onStudio(file) }] : []),
+        ...(isTextOrCode && onEdit ? [{ label: "Edit File", onClick: () => onEdit(file) }] : []),
+        ...(onManageTags ? [{ label: "Manage Tags", onClick: () => onManageTags(file) }] : []),
+        { label: "Download", onClick: () => onDownload(file) },
+        { label: "Rename", onClick: () => onRename(file) },
+        {
+            label: file.favorite ? "Unstar" : "Star",
+            onClick: () => onFavorite(file),
+        },
+        { label: "Share", onClick: () => onShare(file) },
+        { label: "Properties", onClick: () => onProperties(file) },
+        { label: "Delete", onClick: () => onDelete(file) },
+    ];
 
     if (view === "list") {
         return (
@@ -177,12 +197,52 @@ function FileCard({
                         </Avatar>
 
                         <Box flex={1} minWidth={0} onClick={() => onOpen(file)} sx={{ cursor: "pointer" }}>
-                            <Typography fontWeight={700} fontSize="0.9rem" color="#0F172A" noWrap>
-                                {file.originalName}
-                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Typography fontWeight={700} fontSize="0.9rem" color="#0F172A" noWrap>
+                                    {file.originalName}
+                                </Typography>
+                                {tags.map((tag) => (
+                                    <Chip
+                                        key={tag.name}
+                                        label={tag.name}
+                                        size="small"
+                                        sx={{
+                                            height: 18,
+                                            fontSize: "0.65rem",
+                                            fontWeight: 700,
+                                            bgcolor: tag.color || "#4F46E5",
+                                            color: "#FFFFFF",
+                                            borderRadius: "4px",
+                                        }}
+                                    />
+                                ))}
+                            </Box>
                             <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                                 {extension} • {formatFileSize(file.size)} • Modified {new Date(file.updatedAt || file.createdAt).toLocaleDateString()}
                             </Typography>
+                            {file.matchSnippet && (
+                                <Box
+                                    sx={{
+                                        mt: 0.5,
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: 0.5,
+                                        bgcolor: "#FEF3C7",
+                                        color: "#92400E",
+                                        px: 1,
+                                        py: 0.25,
+                                        borderRadius: "4px",
+                                        fontSize: "0.72rem",
+                                        fontFamily: "monospace",
+                                        maxWidth: "95%",
+                                    }}
+                                >
+                                    <FindInPageRoundedIcon sx={{ fontSize: 13 }} />
+                                    <Typography variant="caption" sx={{ fontFamily: "inherit", fontWeight: 600 }}>
+                                        {file.matchSnippet}
+                                    </Typography>
+                                </Box>
+                            )}
                         </Box>
                     </Box>
 
@@ -227,6 +287,19 @@ function FileCard({
                             </IconButton>
                         </Tooltip>
 
+                        <Tooltip title="Tags">
+                            <IconButton
+                                size="small"
+                                onClick={() => onManageTags && onManageTags(file)}
+                                sx={{
+                                    color: tags.length > 0 ? "#4F46E5" : "#64748B",
+                                    "&:hover": { bgcolor: "#EEF2FF", color: "#4F46E5" },
+                                }}
+                            >
+                                <LocalOfferRoundedIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+
                         <Tooltip title="Share">
                             <IconButton
                                 size="small"
@@ -242,22 +315,7 @@ function FileCard({
                             </IconButton>
                         </Tooltip>
 
-                        <ActionMenu
-                            items={[
-                                { label: "Preview", onClick: () => onOpen(file) },
-                                ...(isImage && onStudio ? [{ label: "Image Studio", onClick: () => onStudio(file) }] : []),
-                                ...(isTextOrCode && onEdit ? [{ label: "Edit File", onClick: () => onEdit(file) }] : []),
-                                { label: "Download", onClick: () => onDownload(file) },
-                                { label: "Rename", onClick: () => onRename(file) },
-                                {
-                                    label: file.favorite ? "Unstar" : "Star",
-                                    onClick: () => onFavorite(file),
-                                },
-                                { label: "Share", onClick: () => onShare(file) },
-                                { label: "Properties", onClick: () => onProperties(file) },
-                                { label: "Delete", onClick: () => onDelete(file) },
-                            ]}
-                        />
+                        <ActionMenu items={actionMenuItems} />
                     </Box>
                 </CardContent>
             </Card>
@@ -361,22 +419,7 @@ function FileCard({
                             </IconButton>
                         </Tooltip>
 
-                        <ActionMenu
-                            items={[
-                                { label: "Preview", onClick: () => onOpen(file) },
-                                ...(isImage && onStudio ? [{ label: "Image Studio", onClick: () => onStudio(file) }] : []),
-                                ...(isTextOrCode && onEdit ? [{ label: "Edit File", onClick: () => onEdit(file) }] : []),
-                                { label: "Download", onClick: () => onDownload(file) },
-                                { label: "Rename", onClick: () => onRename(file) },
-                                {
-                                    label: file.favorite ? "Unstar" : "Star",
-                                    onClick: () => onFavorite(file),
-                                },
-                                { label: "Share", onClick: () => onShare(file) },
-                                { label: "Properties", onClick: () => onProperties(file) },
-                                { label: "Delete", onClick: () => onDelete(file) },
-                            ]}
-                        />
+                        <ActionMenu items={actionMenuItems} />
                     </Box>
                 </Box>
 
@@ -396,22 +439,79 @@ function FileCard({
                     <Typography variant="caption" color="text.secondary" display="block" fontSize="0.75rem">
                         {formatFileSize(file.size)} • Modified {new Date(file.updatedAt || file.createdAt).toLocaleDateString()}
                     </Typography>
+
+                    {/* Deep Search Snippet Match */}
+                    {file.matchSnippet && (
+                        <Box
+                            sx={{
+                                mt: 0.75,
+                                p: 0.6,
+                                px: 0.8,
+                                borderRadius: "6px",
+                                bgcolor: "#FEF3C7",
+                                color: "#92400E",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 0.5,
+                                fontSize: "0.72rem",
+                                fontFamily: "monospace",
+                                border: "1px solid #FDE68A",
+                            }}
+                        >
+                            <FindInPageRoundedIcon sx={{ fontSize: 14 }} />
+                            <Typography variant="caption" noWrap sx={{ fontFamily: "inherit", fontWeight: 600 }}>
+                                {file.matchSnippet}
+                            </Typography>
+                        </Box>
+                    )}
                 </Box>
 
                 {/* Bottom Tags */}
-                <Box mt={1.5} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-                    <Chip
-                        label={extension}
-                        size="small"
-                        sx={{
-                            height: 20,
-                            fontSize: "0.68rem",
-                            fontWeight: 700,
-                            bgcolor: styleConfig.bg,
-                            color: styleConfig.color,
-                            borderRadius: "4px",
-                        }}
-                    />
+                <Box mt={1.5} sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 0.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
+                        <Chip
+                            label={extension}
+                            size="small"
+                            sx={{
+                                height: 20,
+                                fontSize: "0.68rem",
+                                fontWeight: 700,
+                                bgcolor: styleConfig.bg,
+                                color: styleConfig.color,
+                                borderRadius: "4px",
+                            }}
+                        />
+                        {tags.slice(0, 2).map((tag) => (
+                            <Chip
+                                key={tag.name}
+                                label={tag.name}
+                                size="small"
+                                sx={{
+                                    height: 20,
+                                    fontSize: "0.65rem",
+                                    fontWeight: 700,
+                                    bgcolor: tag.color || "#4F46E5",
+                                    color: "#FFFFFF",
+                                    borderRadius: "4px",
+                                }}
+                            />
+                        ))}
+                        {tags.length > 2 && (
+                            <Chip
+                                label={`+${tags.length - 2}`}
+                                size="small"
+                                sx={{
+                                    height: 20,
+                                    fontSize: "0.65rem",
+                                    fontWeight: 700,
+                                    bgcolor: "#E2E8F0",
+                                    color: "#475569",
+                                    borderRadius: "4px",
+                                }}
+                            />
+                        )}
+                    </Box>
+
                     {file.favorite && (
                         <Chip
                             icon={<StarRoundedIcon sx={{ fontSize: 12, color: "#D97706 !important" }} />}

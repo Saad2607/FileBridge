@@ -37,7 +37,9 @@ import {
     toggleFavoriteFile,
     createShareLink,
     disableShare,
+    updateFileTags,
 } from "../services/fileService";
+import TagManagerDialog from "../components/common/TagManagerDialog";
 import { FolderContext } from "../context/FolderContext";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../constants/routes";
@@ -74,6 +76,9 @@ function Favorites() {
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareLink, setShareLink] = useState("");
     const [selectedShareFile, setSelectedShareFile] = useState(null);
+
+    const [tagDialogOpen, setTagDialogOpen] = useState(false);
+    const [tagDialogFile, setTagDialogFile] = useState(null);
 
     useEffect(() => {
         loadFavorites();
@@ -136,6 +141,25 @@ function Favorites() {
     const handlePreviewFile = (file) => {
         setPreviewFile(file);
         setPreviewOpen(true);
+    };
+
+    const handleOpenTagDialog = (file) => {
+        setTagDialogFile(file);
+        setTagDialogOpen(true);
+    };
+
+    const handleSaveTags = async (tags) => {
+        try {
+            if (tagDialogFile) {
+                await updateFileTags(tagDialogFile._id, tags);
+                toast.success(`Updated tags for "${tagDialogFile.originalName}"`);
+                loadFavorites();
+            }
+        } catch (error) {
+            console.error("Failed to save tags:", error);
+            toast.error("Failed to update tags.");
+            throw error;
+        }
     };
 
     const filteredFolders = folders.filter((f) =>
@@ -278,6 +302,7 @@ function Favorites() {
                                     setSelectedShareFile(file);
                                     setShareDialogOpen(true);
                                 }}
+                                onManageTags={handleOpenTagDialog}
                             />
                         </Box>
                     )}
@@ -413,6 +438,16 @@ function Favorites() {
                         toast.error(err.response?.data?.message || "Unable to disable sharing.");
                     }
                 }}
+            />
+
+            <TagManagerDialog
+                open={tagDialogOpen}
+                file={tagDialogFile}
+                onClose={() => {
+                    setTagDialogOpen(false);
+                    setTagDialogFile(null);
+                }}
+                onSave={handleSaveTags}
             />
         </Box>
     );

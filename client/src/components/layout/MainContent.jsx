@@ -30,6 +30,8 @@ import {
     toggleFavoriteFile,
     createShareLink,
     disableShare,
+    updateFileTags,
+    batchUpdateTags,
 } from "../../services/fileService";
 
 import FolderGrid from "../folder/FolderGrid";
@@ -59,6 +61,7 @@ import FilePreviewDialog from "../preview/FilePreviewDialog";
 import DesktopSyncHub from "../desktop/DesktopSyncHub";
 import WebDesktopBanner from "../web/WebDesktopBanner";
 import MultiSelectToolbar from "../common/MultiSelectToolbar";
+import TagManagerDialog from "../common/TagManagerDialog";
 import ImageStudioDialog from "../studio/ImageStudioDialog";
 import CodeEditorDialog from "../studio/CodeEditorDialog";
 
@@ -119,6 +122,10 @@ function MainContent() {
 
     const [codeEditorOpen, setCodeEditorOpen] = useState(false);
     const [editorFile, setEditorFile] = useState(null);
+
+    const [tagDialogOpen, setTagDialogOpen] = useState(false);
+    const [tagDialogFile, setTagDialogFile] = useState(null);
+    const [isBatchTagging, setIsBatchTagging] = useState(false);
 
     // Multi-Select State
     const [selectedFolderIds, setSelectedFolderIds] = useState([]);
@@ -454,6 +461,40 @@ function MainContent() {
         }
     };
 
+    const handleOpenTagDialog = (file) => {
+        setTagDialogFile(file);
+        setIsBatchTagging(false);
+        setTagDialogOpen(true);
+    };
+
+    const handleBatchTag = () => {
+        if (selectedFileIds.length === 0) {
+            toast.error("Please select at least one file to tag.");
+            return;
+        }
+        setTagDialogFile(null);
+        setIsBatchTagging(true);
+        setTagDialogOpen(true);
+    };
+
+    const handleSaveTags = async (tags) => {
+        try {
+            if (isBatchTagging) {
+                await batchUpdateTags(selectedFileIds, tags, "add");
+                toast.success(`Tags applied to ${selectedFileIds.length} files!`);
+                handleClearSelection();
+            } else if (tagDialogFile) {
+                await updateFileTags(tagDialogFile._id, tags);
+                toast.success(`Updated tags for "${tagDialogFile.originalName}"`);
+            }
+            loadContent();
+        } catch (error) {
+            console.error("Failed to save tags:", error);
+            toast.error("Failed to update tags.");
+            throw error;
+        }
+    };
+
     const displayedFolders = [...(searchQuery.trim() ? searchFolders : folders)];
     const displayedFiles = [...(searchQuery.trim() ? searchFiles : files)];
 
@@ -503,6 +544,22 @@ function MainContent() {
         case "Favorites":
             filteredFolders = displayedFolders.filter((f) => f.favorite);
             filteredFiles = displayedFiles.filter((f) => f.favorite);
+            break;
+        case "Tagged Files":
+            filteredFolders = [];
+            filteredFiles = displayedFiles.filter(
+                (file) => Array.isArray(file.tags) && file.tags.length > 0
+            );
+            break;
+        case "Code & Text":
+            filteredFolders = [];
+            filteredFiles = displayedFiles.filter((file) => {
+                const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
+                return [
+                    "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+                    "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+                ].includes(ext);
+            });
             break;
         case "Images":
             filteredFolders = [];
@@ -669,6 +726,7 @@ function MainContent() {
                                         setEditorFile(f);
                                         setCodeEditorOpen(true);
                                     }}
+                                    onManageTags={handleOpenTagDialog}
                                 />
                             )}
                         </Box>
@@ -718,6 +776,7 @@ function MainContent() {
                     onClearSelection={handleClearSelection}
                     onBatchDelete={handleBatchDelete}
                     onBatchFavorite={handleBatchFavorite}
+                    onBatchTag={handleBatchTag}
                 />
 
                 <ConfirmDialog
@@ -818,6 +877,20 @@ function MainContent() {
                     }}
                     onGenerate={generateShareLink}
                     onDisable={handleDisableShare}
+                />
+
+                {/* Tag Manager Dialog */}
+                <TagManagerDialog
+                    open={tagDialogOpen}
+                    file={tagDialogFile}
+                    isBatch={isBatchTagging}
+                    selectedCount={selectedFileIds.length}
+                    onClose={() => {
+                        setTagDialogOpen(false);
+                        setTagDialogFile(null);
+                        setIsBatchTagging(false);
+                    }}
+                    onSave={handleSaveTags}
                 />
 
                 {/* In-Browser Image Studio & Transformer */}

@@ -163,3 +163,23 @@ export const disableShare = async (id) => {
 
     return data;
 };
+
+export const updateFileTags = async (id, tags) => {
+    const { data } = await api.patch(`/files/${id}/tags`, { tags });
+    return data;
+};
+
+export const batchUpdateTags = async (fileIds, tags, mode = "add") => {
+    const { data } = await api.post("/files/batch-tags", { fileIds, tags, mode });
+    return data;
+};
+
+export const getFileVersions = async (id) => {
+    const { data } = await api.get(`/files/${id}/versions`);
+    return data;
+};
+
+export const restoreFileVersion = async (id, versionId) => {
+    const { data } = await api.post(`/files/${id}/versions/${versionId}/restore`);
+    return data;
+};

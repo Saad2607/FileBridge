@@ -17,6 +17,7 @@ import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
 
 import AutoFixHighRoundedIcon from "@mui/icons-material/AutoFixHighRounded";
 import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
@@ -45,6 +46,8 @@ function ActionMenu({ items = [] }) {
             return <AutoFixHighRoundedIcon fontSize="small" sx={{ color: "#0D9488" }} />;
         if (label.includes("Edit"))
             return <EditNoteRoundedIcon fontSize="small" sx={{ color: "#4F46E5" }} />;
+        if (label.includes("Tag"))
+            return <LocalOfferRoundedIcon fontSize="small" sx={{ color: "#6366F1" }} />;
         if (label.includes("Download"))
             return <DownloadRoundedIcon fontSize="small" sx={{ color: "#0284C7" }} />;
         if (label.includes("Rename"))

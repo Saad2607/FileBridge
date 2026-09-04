@@ -2,12 +2,14 @@ import { Box, Paper, Typography, Button, IconButton, Chip, Slide } from "@mui/ma
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import StarOutlineRoundedIcon from "@mui/icons-material/StarOutlineRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
 
 function MultiSelectToolbar({
     selectedCount,
     onClearSelection,
     onBatchDelete,
     onBatchFavorite,
+    onBatchTag,
 }) {
     const open = selectedCount > 0;
 
@@ -56,6 +58,24 @@ function MultiSelectToolbar({
                 <Box sx={{ height: 20, width: "1px", bgcolor: "rgba(255, 255, 255, 0.2)" }} />
 
                 <Box display="flex" alignItems="center" gap={1}>
+                    {onBatchTag && (
+                        <Button
+                            size="small"
+                            variant="text"
+                            startIcon={<LocalOfferRoundedIcon sx={{ color: "#818CF8" }} />}
+                            onClick={onBatchTag}
+                            sx={{
+                                color: "#E2E8F0",
+                                fontWeight: 600,
+                                borderRadius: 999,
+                                px: 1.5,
+                                "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" },
+                            }}
+                        >
+                            Tag
+                        </Button>
+                    )}
+
                     {onBatchFavorite && (
                         <Button
                             size="small"

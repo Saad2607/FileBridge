@@ -15,6 +15,7 @@ function FileGrid({
     onShare,
     onStudio,
     onEdit,
+    onManageTags,
 }) {
     if (!files || files.length === 0) {
         return null;
@@ -47,6 +48,7 @@ function FileGrid({
                         onShare={onShare}
                         onStudio={onStudio}
                         onEdit={onEdit}
+                        onManageTags={onManageTags}
                     />
                 </Grid>
             ))}

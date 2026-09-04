@@ -7,60 +7,75 @@ const File = require("../models/File");
  */
 const syncExistingFilesToDatabase = async () => {
     try {
-        const filesWithoutData = await File.find({
+        const filesToSync = await File.find({
             isDeleted: false,
-            $or: [{ fileData: null }, { fileData: { $exists: false } }],
+            $or: [
+                { fileData: null },
+                { fileData: { $exists: false } },
+                { textContent: null },
+                { textContent: { $exists: false } },
+            ],
         }).select("+fileData +textContent");
 
-        if (!filesWithoutData || filesWithoutData.length === 0) {
+        if (!filesToSync || filesToSync.length === 0) {
             return;
         }
 
-        console.log(`[FileBridge StorageSync] Checking ${filesWithoutData.length} files for database persistence backfill...`);
+        console.log(`[FileBridge StorageSync] Checking ${filesToSync.length} files for persistence and text search indexing...`);
 
         let backfilledCount = 0;
 
-        for (const file of filesWithoutData) {
-            const candidatePaths = [
-                file.path ? path.resolve(file.path) : null,
-                file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
-                file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
-                file.storedName ? path.resolve("uploads/files", file.storedName) : null,
-                file.storedName ? path.resolve("server/uploads/files", file.storedName) : null,
-                file.storedName ? path.resolve("uploads", file.storedName) : null,
-            ].filter(Boolean);
+        for (const file of filesToSync) {
+            const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
+            const isText = (file.mimeType && file.mimeType.startsWith("text/")) || [
+                "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+                "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+            ].includes(ext);
 
-            let diskBuffer = null;
-            for (const p of candidatePaths) {
-                if (fs.existsSync(p)) {
+            let buffer = file.fileData;
+
+            if (!buffer || buffer.length === 0) {
+                const candidatePaths = [
+                    file.path ? path.resolve(file.path) : null,
+                    file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
+                    file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
+                    file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+                    file.storedName ? path.resolve("server/uploads/files", file.storedName) : null,
+                    file.storedName ? path.resolve("uploads", file.storedName) : null,
+                ].filter(Boolean);
+
+                for (const p of candidatePaths) {
+                    if (fs.existsSync(p)) {
+                        try {
+                            buffer = fs.readFileSync(p);
+                            break;
+                        } catch {}
+                    }
+                }
+            }
+
+            let modified = false;
+            if (buffer && buffer.length > 0 && buffer.length <= 15 * 1024 * 1024) {
+                if (!file.fileData) {
+                    file.fileData = buffer;
+                    modified = true;
+                }
+                if (isText && !file.textContent) {
                     try {
-                        diskBuffer = fs.readFileSync(p);
-                        break;
+                        file.textContent = buffer.toString("utf8");
+                        modified = true;
                     } catch {}
                 }
             }
 
-            if (diskBuffer && diskBuffer.length > 0 && diskBuffer.length <= 15 * 1024 * 1024) {
-                file.fileData = diskBuffer;
-                const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
-                const isText = (file.mimeType && file.mimeType.startsWith("text/")) || [
-                    "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
-                    "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
-                ].includes(ext);
-
-                if (isText) {
-                    try {
-                        file.textContent = diskBuffer.toString("utf8");
-                    } catch {}
-                }
-
+            if (modified) {
                 await file.save();
                 backfilledCount++;
             }
         }
 
         if (backfilledCount > 0) {
-            console.log(`[FileBridge StorageSync] Successfully persisted ${backfilledCount} file assets directly into MongoDB Atlas.`);
+            console.log(`[FileBridge StorageSync] Successfully persisted and indexed ${backfilledCount} file assets.`);
         }
     } catch (err) {
         console.error("[FileBridge StorageSync] Error during database asset backfill:", err.message);

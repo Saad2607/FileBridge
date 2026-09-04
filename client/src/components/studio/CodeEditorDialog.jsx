@@ -27,12 +27,14 @@ import AutoFixHighRoundedIcon from "@mui/icons-material/AutoFixHighRounded";
 import PlaylistAddRoundedIcon from "@mui/icons-material/PlaylistAddRounded";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VerticalSplitRoundedIcon from "@mui/icons-material/VerticalSplitRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import toast from "react-hot-toast";
 
 import { getFileUrl } from "../../utils/fileHelpers";
 import { updateFileContent, getFileText } from "../../services/fileService";
+import VersionHistoryDrawer from "./VersionHistoryDrawer";
 
 function CodeEditorDialog({ open, file, onClose, onFileSaved }) {
     const [content, setContent] = useState("");
@@ -43,6 +45,7 @@ function CodeEditorDialog({ open, file, onClose, onFileSaved }) {
     const [wordWrap, setWordWrap] = useState(false);
     const [viewMode, setViewMode] = useState("code"); // 'code' | 'split' | 'preview'
     const [templateAnchor, setTemplateAnchor] = useState(null);
+    const [historyDrawerOpen, setHistoryDrawerOpen] = useState(false);
 
     const textareaRef = useRef(null);
     const lineGutterRef = useRef(null);
@@ -454,6 +457,16 @@ function CodeEditorDialog({ open, file, onClose, onFileSaved }) {
                         </Tooltip>
                     )}
 
+                    <Tooltip title="Version History & Snapshots">
+                        <IconButton
+                            size="small"
+                            onClick={() => setHistoryDrawerOpen(true)}
+                            sx={{ color: darkMode ? "#818CF8" : "#4F46E5" }}
+                        >
+                            <HistoryRoundedIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
+                    </Tooltip>
+
                     <Tooltip title={darkMode ? "Switch to Light Theme" : "Switch to Dark Theme"}>
                         <IconButton
                             size="small"
@@ -640,6 +653,20 @@ function CodeEditorDialog({ open, file, onClose, onFileSaved }) {
                                         }}
                                     />
                                 </Box>
+                            )}
+
+                            {/* Inline Version History Drawer Panel */}
+                            {historyDrawerOpen && (
+                                <VersionHistoryDrawer
+                                    file={file}
+                                    onClose={() => setHistoryDrawerOpen(false)}
+                                    onRestore={(restoredContent) => {
+                                        setContent(restoredContent);
+                                        setOriginalContent(restoredContent);
+                                        if (onFileSaved) onFileSaved();
+                                        toast.success("File restored to historical version snapshot!");
+                                    }}
+                                />
                             )}
                         </Box>
                     </Box>

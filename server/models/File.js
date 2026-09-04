@@ -90,6 +90,37 @@ const fileSchema = new mongoose.Schema(
             default: null,
             select: false,
         },
+        tags: [
+            {
+                name: {
+                    type: String,
+                    trim: true,
+                },
+                color: {
+                    type: String,
+                    default: "#4F46E5",
+                },
+            },
+        ],
+        versions: {
+            type: [
+                {
+                    versionNumber: Number,
+                    textContent: String,
+                    size: Number,
+                    savedAt: {
+                        type: Date,
+                        default: Date.now,
+                    },
+                    comment: {
+                        type: String,
+                        default: "Code editor update",
+                    },
+                },
+            ],
+            default: [],
+            select: false,
+        },
     },
     {
         timestamps: true,

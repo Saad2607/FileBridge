@@ -20,6 +20,8 @@ function FilterMenu({ value, onChange }) {
         "Folders",
         "Files",
         "Favorites",
+        "Tagged Files",
+        "Code & Text",
         "Images",
         "PDF",
         "Archives",

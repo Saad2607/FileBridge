@@ -18,6 +18,9 @@ import RestoreFromTrashRoundedIcon from "@mui/icons-material/RestoreFromTrashRou
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import DriveFileRenameOutlineRoundedIcon from "@mui/icons-material/DriveFileRenameOutlineRounded";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
+import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
+import SettingsBackupRestoreRoundedIcon from "@mui/icons-material/SettingsBackupRestoreRounded";
 
 import { getRecentActivities } from "../../services/activityService";
 
@@ -121,6 +124,28 @@ function getActivityConfig(activity) {
                 title: `Downloaded "${activity.targetName}"`,
                 subtitle: "File downloaded",
                 color: "#059669",
+            };
+        case "UPDATE_TAGS":
+        case "BATCH_TAGS":
+            return {
+                icon: <LocalOfferRoundedIcon sx={{ fontSize: 18 }} />,
+                title: `Updated tags for "${activity.targetName}"`,
+                subtitle: "Color tags updated",
+                color: "#6366F1",
+            };
+        case "EDIT_FILE":
+            return {
+                icon: <EditNoteRoundedIcon sx={{ fontSize: 18 }} />,
+                title: `Edited "${activity.targetName}"`,
+                subtitle: "File content modified",
+                color: "#4F46E5",
+            };
+        case "RESTORE_VERSION":
+            return {
+                icon: <SettingsBackupRestoreRoundedIcon sx={{ fontSize: 18 }} />,
+                title: `Restored version of "${activity.targetName}"`,
+                subtitle: activity.metadata?.restoredVersion ? `Version #${activity.metadata.restoredVersion} restored` : "Version snapshot restored",
+                color: "#0EA5E9",
             };
         default:
             return {

@@ -27,14 +27,49 @@ const search = async (req, res) => {
 
         const files = await File.find({
             owner: req.user.id,
-            originalName: regex,
             isDeleted: false,
+            $or: [
+                { originalName: regex },
+                { "tags.name": regex },
+                { textContent: regex },
+            ],
+        }).select("+textContent");
+
+        const filesWithMatchInfo = files.map((file) => {
+            const fileObj = file.toObject();
+            let matchedIn = "name";
+            let matchSnippet = null;
+
+            if (regex.test(file.originalName)) {
+                matchedIn = "name";
+            } else if (file.tags && file.tags.some((t) => regex.test(t.name))) {
+                matchedIn = "tag";
+                const matchedTag = file.tags.find((t) => regex.test(t.name));
+                matchSnippet = matchedTag ? `Tag: #${matchedTag.name}` : null;
+            } else if (file.textContent && regex.test(file.textContent)) {
+                matchedIn = "content";
+                const match = regex.exec(file.textContent);
+                if (match) {
+                    const idx = match.index;
+                    const start = Math.max(0, idx - 25);
+                    const end = Math.min(file.textContent.length, idx + match[0].length + 35);
+                    let snippet = file.textContent.substring(start, end).replace(/\r?\n|\r/g, " ");
+                    if (start > 0) snippet = "..." + snippet;
+                    if (end < file.textContent.length) snippet = snippet + "...";
+                    matchSnippet = snippet;
+                }
+            }
+
+            delete fileObj.textContent;
+            fileObj.matchedIn = matchedIn;
+            fileObj.matchSnippet = matchSnippet;
+            return fileObj;
         });
 
         res.status(200).json({
             success: true,
             folders,
-            files,
+            files: filesWithMatchInfo,
         });
     } catch (error) {
         console.error(error);

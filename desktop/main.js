@@ -34,8 +34,8 @@ function createWindow() {
     });
 
     // Load development server or production build
-    const devServerUrl = "http://localhost:5174";
-    const fallbackDevUrl = "http://localhost:5174";
+    const devServerUrl = "http://localhost:5173";
+    const fallbackDevUrl = "http://localhost:5173";
     const prodPath = path.join(__dirname, "..", "client", "dist", "index.html");
 
     mainWindow.loadURL(devServerUrl).catch(() => {
