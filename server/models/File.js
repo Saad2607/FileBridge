@@ -79,7 +79,17 @@ const fileSchema = new mongoose.Schema(
         downloadCount: {
             type: Number,
             default: 0,
-        }
+        },
+        fileData: {
+            type: Buffer,
+            default: null,
+            select: false,
+        },
+        textContent: {
+            type: String,
+            default: null,
+            select: false,
+        },
     },
     {
         timestamps: true,

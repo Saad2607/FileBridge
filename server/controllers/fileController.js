@@ -12,6 +12,33 @@ const uploadFile = async (req, res) => {
             });
         }
 
+        let fileBuffer = null;
+        let textContent = null;
+
+        if (req.file.path && fs.existsSync(req.file.path)) {
+            try {
+                fileBuffer = fs.readFileSync(req.file.path);
+            } catch (e) {
+                console.error("Error reading uploaded file buffer:", e.message);
+            }
+        } else if (req.file.buffer) {
+            fileBuffer = req.file.buffer;
+        }
+
+        const ext = req.file.originalname ? req.file.originalname.split(".").pop().toLowerCase() : "";
+        const isTextOrCode = (req.file.mimetype && req.file.mimetype.startsWith("text/")) || [
+            "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
+            "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
+        ].includes(ext);
+
+        if (fileBuffer && isTextOrCode) {
+            try {
+                textContent = fileBuffer.toString("utf8");
+            } catch {}
+        }
+
+        const canStoreBuffer = fileBuffer && fileBuffer.length <= 15 * 1024 * 1024;
+
         const file = await File.create({
             originalName: req.file.originalname,
             storedName: req.file.filename,
@@ -20,6 +47,8 @@ const uploadFile = async (req, res) => {
             path: req.file.path,
             folder: req.body.folder || null,
             owner: req.user.id,
+            fileData: canStoreBuffer ? fileBuffer : null,
+            textContent: textContent || null,
         });
 
         logUserActivity({
@@ -37,7 +66,7 @@ const uploadFile = async (req, res) => {
             file,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Upload error:", error);
 
         res.status(500).json({
             success: false,
@@ -84,7 +113,7 @@ const downloadFile = async (req, res) => {
             _id: req.params.id,
             owner: req.user.id,
             isDeleted: false,
-        });
+        }).select("+fileData +textContent");
 
         if (!file) {
             return res.status(404).json({
@@ -122,25 +151,28 @@ const downloadFile = async (req, res) => {
             return res.redirect(file.url);
         }
 
-        // If it is a text/code document, initialize it on disk so the user can immediately edit and save
-        const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
-        const isTextOrCode = (file.mimeType && file.mimeType.startsWith("text/")) || [
-            "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
-            "py", "sql", "env", "yaml", "yml", "xml", "csv", "log", "sh", "bat", "svg"
-        ].includes(ext);
+        if (file.fileData && file.fileData.length > 0) {
+            try {
+                const uploadDir = path.resolve(__dirname, "../uploads/files");
+                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+                const cachePath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+                fs.writeFileSync(cachePath, file.fileData);
+                file.path = cachePath;
+                await file.save();
+            } catch {}
 
-        if (isTextOrCode) {
-            const uploadDir = path.resolve(__dirname, "../uploads/files");
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir, { recursive: true });
-            }
-            const fallbackPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
-            if (!fs.existsSync(fallbackPath)) {
-                fs.writeFileSync(fallbackPath, "", "utf8");
-            }
-            file.path = fallbackPath;
-            await file.save();
-            return res.download(fallbackPath, file.originalName);
+            res.setHeader("Content-Type", file.mimeType || "application/octet-stream");
+            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", file.fileData.length);
+            return res.end(file.fileData);
+        }
+
+        if (file.textContent !== null && file.textContent !== undefined) {
+            const buf = Buffer.from(file.textContent, "utf8");
+            res.setHeader("Content-Type", file.mimeType || "text/plain; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", buf.length);
+            return res.end(buf);
         }
 
         return res.status(404).json({
@@ -310,7 +342,7 @@ const previewFile = async (req, res) => {
         const file = await File.findOne({
             _id: req.params.id,
             isDeleted: false,
-        });
+        }).select("+fileData +textContent");
 
         if (!file) {
             return res.status(404).json({
@@ -321,6 +353,7 @@ const previewFile = async (req, res) => {
 
         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
         res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Cache-Control", "public, max-age=86400");
         if (file.mimeType) {
             res.setHeader("Content-Type", file.mimeType);
         }
@@ -330,8 +363,10 @@ const previewFile = async (req, res) => {
             file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
             file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
             file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("server/uploads/files", file.storedName) : null,
             file.storedName ? path.resolve("uploads", file.storedName) : null,
-            file.storedName ? path.join(__dirname, "../../uploads/files", file.storedName) : null,
+            file.path ? path.join(__dirname, "..", file.path) : null,
+            file.path ? path.join(__dirname, "../..", file.path) : null,
         ].filter(Boolean);
 
         for (const p of candidatePaths) {
@@ -344,7 +379,30 @@ const previewFile = async (req, res) => {
             return res.redirect(file.url);
         }
 
-        // If it is a text/code document, initialize empty file on disk and send
+        if (file.fileData && file.fileData.length > 0) {
+            try {
+                const uploadDir = path.resolve(__dirname, "../uploads/files");
+                if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+                const cachePath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+                fs.writeFileSync(cachePath, file.fileData);
+                file.path = cachePath;
+                await file.save();
+            } catch {}
+
+            res.setHeader("Content-Type", file.mimeType || "application/octet-stream");
+            res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", file.fileData.length);
+            return res.end(file.fileData);
+        }
+
+        if (file.textContent !== null && file.textContent !== undefined) {
+            const buf = Buffer.from(file.textContent, "utf8");
+            res.setHeader("Content-Type", file.mimeType || "text/plain; charset=utf-8");
+            res.setHeader("Content-Disposition", `inline; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", buf.length);
+            return res.end(buf);
+        }
+
         const ext = file.originalName ? file.originalName.split(".").pop().toLowerCase() : "";
         const isTextOrCode = (file.mimeType && file.mimeType.startsWith("text/")) || [
             "txt", "html", "htm", "css", "js", "jsx", "ts", "tsx", "json", "md", "markdown",
@@ -352,17 +410,8 @@ const previewFile = async (req, res) => {
         ].includes(ext);
 
         if (isTextOrCode) {
-            const uploadDir = path.resolve(__dirname, "../uploads/files");
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir, { recursive: true });
-            }
-            const fallbackPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
-            if (!fs.existsSync(fallbackPath)) {
-                fs.writeFileSync(fallbackPath, "", "utf8");
-            }
-            file.path = fallbackPath;
-            await file.save();
-            return res.sendFile(fallbackPath);
+            res.setHeader("Content-Type", file.mimeType || "text/plain; charset=utf-8");
+            return res.send("");
         }
 
         return res.status(404).json({
@@ -402,35 +451,23 @@ const updateFileContent = async (req, res) => {
             });
         }
 
-        const candidatePaths = [
-            file.path ? path.resolve(file.path) : null,
-            file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
-            file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
-            file.storedName ? path.resolve("uploads/files", file.storedName) : null,
-            file.storedName ? path.resolve("uploads", file.storedName) : null,
-            file.storedName ? path.join(__dirname, "../../uploads/files", file.storedName) : null,
-        ].filter(Boolean);
+        const contentBuf = Buffer.from(content, "utf8");
+        file.textContent = content;
+        file.fileData = contentBuf;
+        file.size = Buffer.byteLength(content, "utf8");
 
-        let targetPath = null;
-        for (const p of candidatePaths) {
-            if (fs.existsSync(p)) {
-                targetPath = p;
-                break;
-            }
-        }
-
-        if (!targetPath) {
-            // If path doesn't exist, create it in uploads/files
+        try {
             const uploadDir = path.resolve(__dirname, "../uploads/files");
             if (!fs.existsSync(uploadDir)) {
                 fs.mkdirSync(uploadDir, { recursive: true });
             }
-            targetPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+            const targetPath = path.join(uploadDir, file.storedName || `${file._id}-${file.originalName}`);
+            fs.writeFileSync(targetPath, content, "utf8");
             file.path = targetPath;
+        } catch (e) {
+            console.error("Local disk cache write skipped:", e.message);
         }
 
-        fs.writeFileSync(targetPath, content, "utf8");
-        file.size = Buffer.byteLength(content, "utf8");
         await file.save();
 
         logUserActivity({

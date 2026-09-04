@@ -7,6 +7,12 @@ const connectDB = async () => {
         await mongoose.connect(mongoUri);
 
         console.log("✅ MongoDB Connected");
+
+        // Asynchronously sync existing local disk files into MongoDB Atlas
+        try {
+            const { syncExistingFilesToDatabase } = require("../utils/storageSync");
+            syncExistingFilesToDatabase().catch((e) => console.error("StorageSync error:", e.message));
+        } catch {}
     } catch (error) {
         console.error("❌ MongoDB Connection Failed");
         console.error(error.message);

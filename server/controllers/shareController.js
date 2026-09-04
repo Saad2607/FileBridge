@@ -90,7 +90,7 @@ const getSharedFile = async (req, res) => {
             shareToken: req.params.token,
             isPublic: true,
             isDeleted: false,
-        });
+        }).select("+fileData +textContent +sharePassword");
 
         if (!file) {
             return res.status(404).json({
@@ -138,8 +138,42 @@ const getSharedFile = async (req, res) => {
         }
         await file.save();
 
-        const filePath = path.resolve(file.path);
-        res.download(filePath, file.originalName);
+        const candidatePaths = [
+            file.path ? path.resolve(file.path) : null,
+            file.storedName ? path.join(__dirname, "../uploads/files", file.storedName) : null,
+            file.storedName ? path.join(__dirname, "../uploads", file.storedName) : null,
+            file.storedName ? path.resolve("uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("server/uploads/files", file.storedName) : null,
+            file.storedName ? path.resolve("uploads", file.storedName) : null,
+            file.path ? path.join(__dirname, "..", file.path) : null,
+            file.path ? path.join(__dirname, "../..", file.path) : null,
+        ].filter(Boolean);
+
+        for (const p of candidatePaths) {
+            if (fs.existsSync(p)) {
+                return res.download(p, file.originalName);
+            }
+        }
+
+        if (file.fileData && file.fileData.length > 0) {
+            res.setHeader("Content-Type", file.mimeType || "application/octet-stream");
+            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", file.fileData.length);
+            return res.end(file.fileData);
+        }
+
+        if (file.textContent !== null && file.textContent !== undefined) {
+            const buf = Buffer.from(file.textContent, "utf8");
+            res.setHeader("Content-Type", file.mimeType || "text/plain; charset=utf-8");
+            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(file.originalName)}"`);
+            res.setHeader("Content-Length", buf.length);
+            return res.end(buf);
+        }
+
+        return res.status(404).json({
+            success: false,
+            message: "File asset not found on disk.",
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({
